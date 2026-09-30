@@ -1,0 +1,16 @@
+# Environment & Credentials
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# Uploaded User Files & Temporary files
+uploads/*
+!uploads/.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
