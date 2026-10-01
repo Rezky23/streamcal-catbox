@@ -403,6 +403,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           YouTube &amp; TikTok
         </button>
+        <button class="tab-btn" data-tab="tab-recognize">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Cari Lagu (Shazam)
+        </button>
         <button class="tab-btn" data-tab="tab-history">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Recent Uploads
@@ -505,6 +509,102 @@
 
           <!-- Result Container -->
           <div id="downloaderResultContainer"></div>
+        </div>
+      </div>
+
+      <!-- Tab: Music Recognizer (Shazam Audio Search) -->
+      <div id="tab-recognize" class="tab-content">
+        <div class="rec-container">
+          <!-- Hero Header -->
+          <div class="rec-hero-header">
+            <h2 class="rec-title">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0088ff" stroke-width="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Cari &amp; Identifikasi Lagu (Shazam)
+            </h2>
+            <p class="rec-subtitle">Upload file audio atau rekaman potongan lagu, rekam langsung via mikrofon, atau masukkan URL audio untuk mengenali judul lagu, artis, lirik, dan album dengan teknologi Shazam.</p>
+            <div class="rec-platform-tags">
+              <span class="rec-tag rec-tag-shazam">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm4 0h-2v-6h2v6z"/></svg>
+                Shazam AI Engine
+              </span>
+              <span class="rec-tag rec-tag-mic">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                Upload File / Live Mic
+              </span>
+              <span class="rec-tag rec-tag-fast">
+                ⚡ Akurat &amp; Cepat (1-2 Detik)
+              </span>
+            </div>
+          </div>
+
+          <!-- Audio Recognition Dropzone & Select Area -->
+          <div id="recUploadArea">
+            <div class="rec-dropzone" id="recDropzone">
+              <div class="rec-wave-icon">
+                <span class="rec-wave-bar"></span>
+                <span class="rec-wave-bar"></span>
+                <span class="rec-wave-bar"></span>
+                <span class="rec-wave-bar"></span>
+                <span class="rec-wave-bar"></span>
+              </div>
+              <div class="rec-dropzone-title">Tarik &amp; lepas file audio di sini, atau klik untuk memilih</div>
+              <div class="rec-dropzone-subtitle">Mendukung MP3, WAV, M4A, AAC, OGG, FLAC, WEBM hingga 15MB. Durasi minimal 4-5 detik untuk hasil terbaik.</div>
+              <input type="file" id="recFileInput" accept="audio/*,video/*" style="display:none;">
+            </div>
+
+            <!-- Action buttons: Browse, Record Mic, URL -->
+            <div class="rec-buttons-row" style="margin-top:14px;">
+              <button type="button" id="recBrowseBtn" class="rec-action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Pilih File Audio</span>
+              </button>
+
+              <button type="button" id="recMicBtn" class="rec-action-btn rec-btn-mic">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                <span id="recMicBtnText">Rekam Suara (Mic)</span>
+              </button>
+
+              <button type="button" id="recToggleUrlBtn" class="rec-action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>Gunakan URL Audio</span>
+              </button>
+            </div>
+
+            <!-- Optional Audio URL Input (Hidden by default) -->
+            <div id="recUrlBox" style="display:none; margin-top:14px;">
+              <div class="dl-search-box">
+                <div class="dl-search-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                </div>
+                <input type="url" id="recAudioUrlInput" class="dl-search-input" placeholder="Masukkan URL langsung ke file audio (cth: https://example.com/lagu.mp3)">
+                <button type="button" id="recSubmitUrlBtn" class="dl-btn-submit" style="background:#0088ff !important;">
+                  <span>Kenali Audio</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Staged / Selected Audio Box -->
+            <div id="recSelectedBox" class="rec-selected-card" style="display:none; margin-top:16px;">
+              <div class="rec-selected-header">
+                <div class="rec-file-info">
+                  <span class="rec-file-icon">🎵</span>
+                  <div>
+                    <div id="recSelectedName" class="rec-file-name">audio_sample.mp3</div>
+                    <div id="recSelectedSize" class="rec-file-size">1.2 MB</div>
+                  </div>
+                </div>
+                <button type="button" id="recRemoveFileBtn" class="rec-btn-remove" title="Hapus file audio">✕</button>
+              </div>
+              <audio id="recSelectedAudioPlayer" class="rec-audio-preview" controls></audio>
+              <button type="button" id="recSubmitFileBtn" class="rec-action-btn rec-btn-primary" style="margin-top:6px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                <span id="recSubmitFileBtnText">Kenali Lagu Sekarang (Shazam)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Results Container -->
+          <div id="recResultContainer" style="margin-top:10px;"></div>
         </div>
       </div>
 

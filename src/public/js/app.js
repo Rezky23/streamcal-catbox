@@ -535,6 +535,373 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ========================================================
+  // AUDIO RECOGNIZER / SHAZAM (Upload, Mic & Recognize)
+  // ========================================================
+  const recDropzone = document.getElementById('recDropzone');
+  const recFileInput = document.getElementById('recFileInput');
+  const recBrowseBtn = document.getElementById('recBrowseBtn');
+  const recMicBtn = document.getElementById('recMicBtn');
+  const recMicBtnText = document.getElementById('recMicBtnText');
+  const recToggleUrlBtn = document.getElementById('recToggleUrlBtn');
+  const recUrlBox = document.getElementById('recUrlBox');
+  const recAudioUrlInput = document.getElementById('recAudioUrlInput');
+  const recSubmitUrlBtn = document.getElementById('recSubmitUrlBtn');
+  const recSelectedBox = document.getElementById('recSelectedBox');
+  const recSelectedName = document.getElementById('recSelectedName');
+  const recSelectedSize = document.getElementById('recSelectedSize');
+  const recSelectedAudioPlayer = document.getElementById('recSelectedAudioPlayer');
+  const recRemoveFileBtn = document.getElementById('recRemoveFileBtn');
+  const recSubmitFileBtn = document.getElementById('recSubmitFileBtn');
+  const recSubmitFileBtnText = document.getElementById('recSubmitFileBtnText');
+  const recResultContainer = document.getElementById('recResultContainer');
+
+  let currentAudioFile = null;
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let recordTimer = null;
+  let recordSeconds = 0;
+  let mediaStream = null;
+
+  // Browse File Triggers
+  recDropzone?.addEventListener('click', () => recFileInput?.click());
+  recBrowseBtn?.addEventListener('click', () => recFileInput?.click());
+
+  // Dropzone drag & drop
+  if (recDropzone) {
+    ['dragenter', 'dragover'].forEach(name => {
+      recDropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        recDropzone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      recDropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        recDropzone.classList.remove('dragover');
+      });
+    });
+
+    recDropzone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        stageAudioFile(files[0]);
+      }
+    });
+  }
+
+  // File Input Change
+  recFileInput?.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      stageAudioFile(e.target.files[0]);
+      recFileInput.value = '';
+    }
+  });
+
+  // Stage Selected File
+  function stageAudioFile(file) {
+    if (!file) return;
+    currentAudioFile = file;
+    if (recSelectedName) recSelectedName.textContent = file.name;
+    if (recSelectedSize) recSelectedSize.textContent = formatBytes(file.size);
+
+    // Audio preview
+    const blobUrl = URL.createObjectURL(file);
+    if (recSelectedAudioPlayer) recSelectedAudioPlayer.src = blobUrl;
+    if (recSelectedBox) recSelectedBox.style.display = 'flex';
+    if (recResultContainer) recResultContainer.innerHTML = '';
+  }
+
+  // Remove Selected File
+  recRemoveFileBtn?.addEventListener('click', () => {
+    currentAudioFile = null;
+    if (recSelectedAudioPlayer) {
+      recSelectedAudioPlayer.pause();
+      recSelectedAudioPlayer.src = '';
+    }
+    if (recSelectedBox) recSelectedBox.style.display = 'none';
+  });
+
+  // Toggle URL Input
+  recToggleUrlBtn?.addEventListener('click', () => {
+    if (!recUrlBox) return;
+    if (recUrlBox.style.display === 'none' || !recUrlBox.style.display) {
+      recUrlBox.style.display = 'block';
+      recAudioUrlInput?.focus();
+    } else {
+      recUrlBox.style.display = 'none';
+    }
+  });
+
+  // Microphone Recording via MediaRecorder
+  recMicBtn?.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      // Stop recording
+      mediaRecorder.stop();
+      return;
+    }
+
+    // Start recording
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('Browser Anda tidak mendukung perekaman audio via mikrofon.');
+      return;
+    }
+
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      recordSeconds = 0;
+
+      mediaRecorder = new MediaRecorder(mediaStream);
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        clearInterval(recordTimer);
+        recMicBtn.classList.remove('recording');
+        if (recMicBtnText) recMicBtnText.textContent = 'Rekam Suara (Mic)';
+
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(track => track.stop());
+          mediaStream = null;
+        }
+
+        if (audioChunks.length > 0) {
+          const mimeType = mediaRecorder.mimeType || 'audio/webm';
+          const audioBlob = new Blob(audioChunks, { type: mimeType });
+          const recordedFile = new File([audioBlob], `rekaman_mic_${Date.now()}.webm`, { type: mimeType });
+          stageAudioFile(recordedFile);
+        }
+      };
+
+      mediaRecorder.start();
+      recMicBtn.classList.add('recording');
+      if (recMicBtnText) recMicBtnText.innerHTML = '<span class="rec-mic-dot"></span> Merekam... (00:00)';
+
+      recordTimer = setInterval(() => {
+        recordSeconds++;
+        const mins = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+        const secs = String(recordSeconds % 60).padStart(2, '0');
+        if (recMicBtnText) recMicBtnText.innerHTML = `<span class="rec-mic-dot"></span> Berhenti (${mins}:${secs})`;
+
+        // Auto-stop after 20 seconds to keep audio optimal for fingerprinting
+        if (recordSeconds >= 20) {
+          mediaRecorder.stop();
+        }
+      }, 1000);
+
+    } catch (err) {
+      console.error('Mic Error:', err);
+      alert('Tidak dapat mengakses mikrofon: ' + err.message);
+    }
+  });
+
+  // Submit Uploaded / Recorded Audio
+  recSubmitFileBtn?.addEventListener('click', async () => {
+    if (!currentAudioFile) return;
+
+    recSubmitFileBtn.disabled = true;
+    if (recSubmitFileBtnText) recSubmitFileBtnText.innerHTML = '<span class="dl-spinner"></span> Mengidentifikasi Lagu via Shazam...';
+    if (recResultContainer) recResultContainer.innerHTML = '';
+
+    const formData = new FormData();
+    formData.append('audio', currentAudioFile);
+
+    try {
+      const res = await fetch('/api/recognize', {
+        method: 'POST',
+        body: formData
+      });
+
+      const json = await res.json();
+      if (json.success && json.data && json.data.matched) {
+        renderRecognizeResult(json.data);
+      } else {
+        showRecognizeError(json.message || 'Lagu tidak berhasil diidentifikasi.');
+      }
+    } catch (err) {
+      showRecognizeError('Terjadi kesalahan menghubungi server: ' + err.message);
+    } finally {
+      recSubmitFileBtn.disabled = false;
+      if (recSubmitFileBtnText) recSubmitFileBtnText.textContent = 'Kenali Lagu Sekarang (Shazam)';
+    }
+  });
+
+  // Submit Audio URL
+  recSubmitUrlBtn?.addEventListener('click', async () => {
+    const url = recAudioUrlInput?.value.trim();
+    if (!url) {
+      recAudioUrlInput?.focus();
+      return;
+    }
+
+    recSubmitUrlBtn.disabled = true;
+    recSubmitUrlBtn.innerHTML = '<span class="dl-spinner"></span> Menganalisis...';
+    if (recResultContainer) recResultContainer.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/recognize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      const json = await res.json();
+      if (json.success && json.data && json.data.matched) {
+        renderRecognizeResult(json.data);
+      } else {
+        showRecognizeError(json.message || 'Lagu tidak berhasil diidentifikasi.');
+      }
+    } catch (err) {
+      showRecognizeError('Terjadi kesalahan menghubungi server: ' + err.message);
+    } finally {
+      recSubmitUrlBtn.disabled = false;
+      recSubmitUrlBtn.innerHTML = '<span>Kenali Audio</span>';
+    }
+  });
+
+  // Show Error Card
+  function showRecognizeError(msg) {
+    if (!recResultContainer) return;
+    recResultContainer.innerHTML = `
+      <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:18px 20px; color:#ef4444; font-size:0.9rem; margin-top:14px; display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px; font-weight:700;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Pencarian Lagu Gagal</span>
+        </div>
+        <div style="color:var(--text-main);">${escapeHtml(msg)}</div>
+        <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
+          💡 <strong>Tips:</strong> Pastikan audio berdurasi setidaknya 4-10 detik, memuat melodi atau vokal yang jelas tanpa terlalu banyak noise/suara latar.
+        </div>
+      </div>
+    `;
+  }
+
+  // Render Shazam Match Result
+  function renderRecognizeResult(song) {
+    if (!recResultContainer) return;
+
+    const coverImg = song.coverArt || '/assets/mascot.svg';
+    let previewAudioHtml = '';
+    if (song.previewAudio) {
+      previewAudioHtml = `
+        <div class="rec-player-section">
+          <div class="rec-player-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Official Audio Preview (30 detik)
+          </div>
+          <audio controls autoplay style="width:100%; height:36px; outline:none;">
+            <source src="${escapeHtml(song.previewAudio)}" type="audio/mp4">
+            <source src="${escapeHtml(song.previewAudio)}" type="audio/aac">
+            Browser Anda tidak mendukung audio player.
+          </audio>
+        </div>
+      `;
+    }
+
+    let metaChips = '';
+    if (song.album) metaChips += `<div class="rec-meta-chip">Album: <strong>${escapeHtml(song.album)}</strong></div>`;
+    if (song.releaseYear) metaChips += `<div class="rec-meta-chip">Tahun: <strong>${escapeHtml(song.releaseYear)}</strong></div>`;
+    if (song.genre) metaChips += `<div class="rec-meta-chip">Genre: <strong>${escapeHtml(song.genre)}</strong></div>`;
+    if (song.label) metaChips += `<div class="rec-meta-chip">Label: <strong>${escapeHtml(song.label)}</strong></div>`;
+
+    // Action buttons
+    let linksHtml = '';
+    if (song.shazamUrl) {
+      linksHtml += `
+        <a href="${escapeHtml(song.shazamUrl)}" target="_blank" rel="noopener noreferrer" class="rec-link-btn rec-link-shazam">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm4 0h-2v-6h2v6z"/></svg>
+          Buka di Shazam
+        </a>
+      `;
+    }
+    if (song.youtubeSearchUrl) {
+      linksHtml += `
+        <a href="${escapeHtml(song.youtubeSearchUrl)}" target="_blank" rel="noopener noreferrer" class="rec-link-btn rec-link-youtube">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          Cari di YouTube
+        </a>
+      `;
+    }
+    if (song.spotifyUrl) {
+      linksHtml += `
+        <a href="${escapeHtml(song.spotifyUrl)}" target="_blank" rel="noopener noreferrer" class="rec-link-btn rec-link-spotify">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M7 9c3-1 7-1 10 1M8 12c2.5-.8 5.5-.8 8 .8M9 15c2-.5 4.5-.5 6 .5" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+          Spotify
+        </a>
+      `;
+    }
+    if (song.appleMusicUrl) {
+      linksHtml += `
+        <a href="${escapeHtml(song.appleMusicUrl)}" target="_blank" rel="noopener noreferrer" class="rec-link-btn rec-link-apple">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.242 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/></svg>
+          Apple Music
+        </a>
+      `;
+    }
+
+    let lyricsHtml = '';
+    if (song.lyrics) {
+      lyricsHtml = `
+        <div class="rec-lyrics-box">
+          <div class="rec-lyrics-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Lirik Lagu
+          </div>
+          <div class="rec-lyrics-content">${escapeHtml(song.lyrics)}</div>
+        </div>
+      `;
+    }
+
+    recResultContainer.innerHTML = `
+      <div class="rec-result-card">
+        <div class="rec-result-layout">
+          <div class="rec-cover-wrap">
+            <img src="${escapeHtml(coverImg)}" alt="${escapeHtml(song.title)}" class="rec-cover-img" onerror="this.src='/assets/mascot.svg'">
+          </div>
+
+          <div class="rec-info-col">
+            <div class="rec-badge-match">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Lagu Teridentifikasi!
+            </div>
+
+            <div class="rec-track-title">${escapeHtml(song.title)}</div>
+            <div class="rec-track-artist">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              ${escapeHtml(song.artist)}
+            </div>
+
+            ${metaChips ? `<div class="rec-meta-grid">${metaChips}</div>` : ''}
+
+            ${previewAudioHtml}
+
+            <div class="rec-links-row">
+              ${linksHtml}
+            </div>
+          </div>
+        </div>
+
+        ${lyricsHtml}
+
+        <div style="display:flex; justify-content:flex-end; border-top:1px solid var(--border-color); padding-top:14px;">
+          <button type="button" id="recResetBtn" class="rec-action-btn" style="font-size:0.82rem; padding:6px 14px;">
+            <span>🔄 Identifikasi Lagu Lain</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('recResetBtn')?.addEventListener('click', () => {
+      recResultContainer.innerHTML = '';
+      recRemoveFileBtn?.click();
+    });
+  }
+
   // Copy to Clipboard Utility
   function copyToClipboard(text, btnElement) {
     navigator.clipboard.writeText(text).then(() => {

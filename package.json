@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@kelvdra/scraper": "^1.0.43-rc.4",
+    "@renmu/node-shazam": "^2.0.4",
     "axios": "^1.7.9",
     "btch-downloader": "^6.4.0",
     "compression": "^1.7.5",
