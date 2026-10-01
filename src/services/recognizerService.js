@@ -1,11 +1,52 @@
-const { Shazam } = require('@renmu/node-shazam');
 const { recognizeBytes } = require('shazamio-core');
 const axios = require('axios');
+const crypto = require('crypto');
 
 class RecognizerService {
   /**
-   * Identify music from an audio Buffer using Shazam WASM fingerprinting
-   * @param {Buffer} buffer - Raw audio file buffer (mp3, wav, ogg, m4a, etc.)
+   * Generate UUID v4 for Shazam request tracking
+   */
+  _generateUUID() {
+    return crypto.randomUUID();
+  }
+
+  /**
+   * Send HTTP recognition request directly to Shazam's mobile discovery API
+   */
+  async _sendShazamRequest(sig, timezone = 'Asia/Jakarta', language = 'en-US') {
+    const uuid1 = this._generateUUID();
+    const uuid2 = this._generateUUID();
+    const url = `https://amp.shazam.com/discovery/v5/${language}/US/iphone/-/tag/${uuid1}/${uuid2}?sync=true&webv3=true&sampling=true&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3`;
+
+    const body = {
+      timezone: timezone,
+      signature: {
+        uri: sig.uri,
+        samplems: sig.samplems,
+      },
+      timestamp: Date.now(),
+      context: {},
+      geolocation: {},
+    };
+
+    const response = await axios.post(url, body, {
+      headers: {
+        'X-Shazam-Platform': 'IPHONE',
+        'X-Shazam-AppVersion': '14.1.0',
+        'Accept': '*/*',
+        'Content-Type': 'application/json',
+        'Accept-Language': language,
+        'User-Agent': 'Shazam/14.1.0 (iPhone; iOS 14.7.1; Scale/3.00)'
+      },
+      timeout: 10000
+    });
+
+    return response.data;
+  }
+
+  /**
+   * Identify music from an audio Buffer using Shazam WebAssembly fingerprinting
+   * @param {Buffer} buffer - Raw audio file buffer (mp3, wav, ogg, m4a, webm, etc.)
    * @returns {Promise<Object>} Formatted song details or matched: false
    */
   async recognizeBuffer(buffer) {
@@ -13,7 +54,6 @@ class RecognizerService {
       throw new Error('File audio kosong atau tidak terbaca.');
     }
 
-    const shazam = new Shazam();
     let signatures = [];
 
     try {
@@ -33,30 +73,12 @@ class RecognizerService {
     try {
       let rawResult = null;
 
-      // Try the signatures (usually 1-3 chunks are generated)
+      // Try the signatures (top 3 signatures to keep latency low)
       for (let i = 0; i < signatures.length; i++) {
         const sig = signatures[i];
-        const data = {
-          timezone: shazam.endpoint.timezone || 'Asia/Jakarta',
-          signature: {
-            uri: sig.uri,
-            samplems: sig.samplems,
-          },
-          timestamp: Date.now(),
-          context: {},
-          geolocation: {},
-        };
-
-        const endpointUrl = new URL(shazam.endpoint.url());
-        const params = shazam.endpoint.params();
-        Object.entries(params).forEach(([k, v]) => endpointUrl.searchParams.append(k, v));
 
         try {
-          const res = await shazam.endpoint.sendRecognizeRequest(
-            endpointUrl.toString(),
-            JSON.stringify(data),
-            'id-ID'
-          );
+          const res = await this._sendShazamRequest(sig, 'Asia/Jakarta', 'en-US');
 
           if (res && Array.isArray(res.matches) && res.matches.length > 0 && res.track) {
             rawResult = res;
@@ -66,7 +88,6 @@ class RecognizerService {
           console.warn(`[RecognizerService] Attempt ${i + 1} request warning:`, apiErr.message);
         }
 
-        // Limit attempts to top 3 signatures to keep latency low
         if (i >= 2) break;
       }
 
