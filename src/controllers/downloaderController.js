@@ -6,7 +6,7 @@ const downloaderService = require('../services/downloaderService');
 const fileService = require('../services/fileService');
 const { calculateBufferHash } = require('../utils/hash');
 const { generateShortId } = require('../utils/idGenerator');
-const { getCleanExtension, isValidHttpUrl } = require('../utils/helpers');
+const { getCleanExtension, isValidHttpUrl, isSafePublicUrl } = require('../utils/helpers');
 
 /**
  * Resolve YouTube or TikTok video/audio details and download links
@@ -14,10 +14,10 @@ const { getCleanExtension, isValidHttpUrl } = require('../utils/helpers');
 async function resolveMedia(req, res) {
   try {
     const { url } = req.body;
-    if (!url || !isValidHttpUrl(url)) {
+    if (!url || !isSafePublicUrl(url)) {
       return res.status(400).json({
         success: false,
-        error: 'Silakan masukkan tautan (URL) yang valid.'
+        error: 'Silakan masukkan tautan (URL) publik yang valid.'
       });
     }
 
@@ -41,8 +41,8 @@ async function resolveMedia(req, res) {
 async function streamDownload(req, res) {
   try {
     const { url, filename } = req.query;
-    if (!url || !isValidHttpUrl(url)) {
-      return res.status(400).send('Invalid URL');
+    if (!url || !isSafePublicUrl(url)) {
+      return res.status(400).send('Invalid or restricted URL');
     }
 
     const safeFilename = (filename || 'media')

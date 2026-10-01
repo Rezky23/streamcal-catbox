@@ -1,6 +1,7 @@
 const { recognizeBytes } = require('shazamio-core');
 const axios = require('axios');
 const crypto = require('crypto');
+const { isSafePublicUrl } = require('../utils/helpers');
 
 class RecognizerService {
   /**
@@ -186,7 +187,9 @@ class RecognizerService {
    * @param {string} audioUrl
    */
   async recognizeFromUrl(audioUrl) {
-    if (!audioUrl) throw new Error('URL audio tidak boleh kosong.');
+    if (!audioUrl || !isSafePublicUrl(audioUrl)) {
+      throw new Error('URL audio tidak valid atau mengarah ke alamat yang tidak diizinkan.');
+    }
 
     const res = await axios.get(audioUrl, {
       responseType: 'arraybuffer',

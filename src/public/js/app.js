@@ -439,9 +439,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let previewElement = '';
     if (isImage) {
-      previewElement = `<a href="${directUrl}" target="_blank" rel="noopener"><img src="${directUrl}" class="thumb-preview" alt="Preview" loading="lazy"></a>`;
+      previewElement = `<a href="${escapeHtml(directUrl)}" target="_blank" rel="noopener"><img src="${escapeHtml(directUrl)}" class="thumb-preview" alt="Preview" loading="lazy"></a>`;
     } else if (isAudio) {
-      previewElement = `<audio controls src="${directUrl}" style="height: 38px; max-width: 220px; outline: none;"></audio>`;
+      previewElement = `<audio controls src="${escapeHtml(directUrl)}" style="height: 38px; max-width: 220px; outline: none;"></audio>`;
     }
 
     card.innerHTML = `
@@ -454,8 +454,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="url-box">
-        <input type="text" class="url-input" value="${directUrl}" readonly onclick="this.select()">
-        <button class="btn btn-primary copy-btn" data-copy="${directUrl}">Copy Link</button>
+        <input type="text" class="url-input" value="${escapeHtml(directUrl)}" readonly onclick="this.select()">
+        <button class="btn btn-primary copy-btn" data-copy="${escapeHtml(directUrl)}">Copy Link</button>
       </div>
 
       <div class="preview-row">
@@ -901,9 +901,13 @@ document.addEventListener('DOMContentLoaded', () => {
     history.forEach(item => {
       const isImg = item.mimeType?.startsWith('image/') || /\.(png|jpe?g|gif|webp|svg)$/i.test(item.url);
       const isAud = item.mimeType?.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|aac|flac|opus|weba)$/i.test(item.url);
+      const rawUrl = item.url || '';
+      // Ensure URL is a valid http/https or relative path
+      const safeUrl = (/^(https?:\/\/|\/)/i.test(rawUrl)) ? escapeHtml(rawUrl) : '#';
+
       let thumbHtml = '📄';
-      if (isImg) {
-        thumbHtml = `<img src="${item.url}" class="history-thumb" alt="thumb">`;
+      if (isImg && safeUrl !== '#') {
+        thumbHtml = `<img src="${safeUrl}" class="history-thumb" alt="thumb">`;
       } else if (isAud) {
         thumbHtml = `<span style="font-size:1.4rem;">🎵</span>`;
       }
@@ -914,11 +918,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ${thumbHtml}
           </td>
           <td>
-            <a href="${item.url}" target="_blank" style="font-weight:500;">${escapeHtml(item.name || item.storedName)}</a>
+            <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="font-weight:500;">${escapeHtml(item.name || item.storedName)}</a>
           </td>
           <td style="color:var(--text-dim);">${formatBytes(item.size)}</td>
           <td>
-            <button class="btn btn-secondary history-copy-btn" data-url="${item.url}" style="padding:4px 10px; font-size:0.8rem;">Copy</button>
+            <button class="btn btn-secondary history-copy-btn" data-url="${safeUrl}" style="padding:4px 10px; font-size:0.8rem;">Copy</button>
           </td>
         </tr>
       `;

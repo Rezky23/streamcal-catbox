@@ -28,6 +28,12 @@ async function serveDirectFile(req, res, next) {
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     res.setHeader('Content-Type', contentType);
     res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+
+    // Security Hardening: Neutralize SVG script execution (Stored XSS)
+    if (contentType === 'image/svg+xml' || (file.extension && file.extension.toLowerCase() === 'svg')) {
+      res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+    }
 
     // Support HTTP Range requests (crucial for audio seeking and streaming on Discord/Web)
     const range = req.headers.range;

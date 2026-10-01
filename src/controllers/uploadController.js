@@ -5,7 +5,7 @@ const config = require('../config/env');
 const fileService = require('../services/fileService');
 const { calculateBufferHash } = require('../utils/hash');
 const { generateShortId } = require('../utils/idGenerator');
-const { getCleanExtension, isValidHttpUrl } = require('../utils/helpers');
+const { getCleanExtension, isValidHttpUrl, isSafePublicUrl } = require('../utils/helpers');
 
 /**
  * Handle multipart file uploads (single or batch) in memory
@@ -79,10 +79,10 @@ async function uploadFiles(req, res) {
 async function uploadFromUrl(req, res) {
   const { url } = req.body;
 
-  if (!url || !isValidHttpUrl(url)) {
+  if (!url || !isSafePublicUrl(url)) {
     return res.status(400).json({
       success: false,
-      error: 'Please provide a valid HTTP or HTTPS URL.'
+      error: 'URL tidak valid atau mengarah ke alamat yang tidak diizinkan.'
     });
   }
 
