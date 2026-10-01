@@ -386,13 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download MP3 (${escapeHtml(primaryAudio.quality)})
           </a>
-          <button type="button" class="dl-action-btn btn-audio-save" id="saveStreamcalBtn" data-audiourl="${escapeHtml(primaryAudio.url)}">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-            <span id="saveStreamcalBtnText">Simpan ke Streamcal</span>
-          </button>
         </div>
-
-        <div id="saveStreamcalResult"></div>
       `;
     }
 
@@ -430,70 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     downloaderResultContainer.appendChild(card);
-
-    // Save to Streamcal Click Handler
-    const saveBtn = card.querySelector('#saveStreamcalBtn');
-    const saveResultDiv = card.querySelector('#saveStreamcalResult');
-    const saveBtnText = card.querySelector('#saveStreamcalBtnText');
-
-    saveBtn?.addEventListener('click', async () => {
-      const audioUrl = saveBtn.getAttribute('data-audiourl');
-      if (!audioUrl) return;
-
-      saveBtn.disabled = true;
-      saveBtnText.innerHTML = '<span class="dl-spinner"></span> Menyimpan...';
-      if (saveResultDiv) saveResultDiv.innerHTML = '';
-
-      try {
-        const res = await fetch('/api/downloader/save-streamcal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: audioUrl,
-            title: data.title,
-            format: 'mp3'
-          })
-        });
-
-        const resJson = await res.json();
-        if (resJson.success && resJson.file) {
-          const f = resJson.file;
-          saveToHistory(f);
-
-          saveBtnText.textContent = 'Tersimpan!';
-          saveBtn.style.background = 'rgba(16, 185, 129, 0.3)';
-
-          if (saveResultDiv) {
-            saveResultDiv.innerHTML = `
-              <div class="saved-streamcal-box">
-                <div class="saved-streamcal-title">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  Tersimpan di Streamcal! Tautan Langsung:
-                  <span style="font-size:0.75rem; background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); border-radius:4px; padding:2px 6px; margin-left:6px;">⏱️ Hapus otomatis dalam 10 menit</span>
-                </div>
-                <div class="url-box" style="margin-top:4px;">
-                  <input type="text" class="url-input" value="${escapeHtml(f.url)}" readonly onclick="this.select()">
-                  <button type="button" class="btn btn-primary copy-btn" data-copy="${escapeHtml(f.url)}">Copy Link</button>
-                </div>
-              </div>
-            `;
-
-            const copyBtn = saveResultDiv.querySelector('.copy-btn');
-            copyBtn?.addEventListener('click', () => {
-              copyToClipboard(f.url, copyBtn);
-            });
-          }
-        } else {
-          alert(resJson.error || 'Gagal menyimpan ke Streamcal.');
-          saveBtn.disabled = false;
-          saveBtnText.textContent = 'Simpan ke Streamcal';
-        }
-      } catch (err) {
-        alert('Kesalahan saat menyimpan: ' + err.message);
-        saveBtn.disabled = false;
-        saveBtnText.textContent = 'Simpan ke Streamcal';
-      }
-    });
   }
 
   // Render Result Card (Catbox styled output)
