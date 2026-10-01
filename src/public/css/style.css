@@ -79,20 +79,23 @@ a:hover {
   padding: 0 20px;
 }
 
-/* Streamcal Brand Text - Pure Crisp White with Stylish Typography */
+/* Streamcal Brand Text - Adaptive Theme Responsive */
 .streamcal-brand {
   font-family: var(--font-brand);
-  color: #ffffff !important;
   font-weight: 800;
   letter-spacing: -0.5px;
   display: inline-block;
-  text-shadow: 0 0 18px rgba(255, 255, 255, 0.35), 0 2px 4px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease, text-shadow 0.2s ease;
+  transition: transform 0.2s ease, text-shadow 0.2s ease, color 0.2s ease;
 }
 
-.streamcal-brand:hover {
-  text-shadow: 0 0 24px rgba(255, 255, 255, 0.55), 0 2px 6px rgba(0, 0, 0, 0.6);
-  transform: translateY(-1px);
+[data-theme="dark"] .streamcal-brand {
+  color: #ffffff !important;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.35), 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .streamcal-brand {
+  color: #0f172a !important;
+  text-shadow: none !important;
 }
 
 /* Navigation Header */
@@ -222,9 +225,9 @@ a:hover {
   border: none;
   border-bottom: 2px solid transparent;
   padding: 14px 16px;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-muted) !important;
   cursor: pointer;
   white-space: nowrap;
   display: flex;
@@ -235,14 +238,76 @@ a:hover {
 }
 
 .tab-btn:hover {
-  color: var(--text-main);
-  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-main) !important;
+  background-color: rgba(125, 125, 125, 0.05);
 }
 
-.tab-btn.active {
-  color: #ffffff;
-  border-bottom-color: var(--accent-primary);
-  background-color: var(--surface-color);
+[data-theme="dark"] .tab-btn.active {
+  color: #818cf8 !important;
+  border-bottom-color: var(--accent-primary) !important;
+  background-color: var(--surface-color) !important;
+}
+
+[data-theme="light"] .tab-btn.active {
+  color: #4f46e5 !important;
+  border-bottom-color: #4f46e5 !important;
+  background-color: var(--surface-color) !important;
+  font-weight: 700 !important;
+}
+
+/* Sub-Tab Switcher for Image to URL */
+.sub-tab-switcher-wrap {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 18px;
+}
+
+.sub-tab-switcher {
+  display: inline-flex;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 6px;
+}
+
+.sub-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sub-tab-btn:hover {
+  color: var(--text-main);
+}
+
+.sub-tab-btn.active {
+  background: var(--surface-color);
+  color: var(--text-main);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-weight: 700;
+}
+
+[data-theme="light"] .sub-tab-btn.active {
+  color: #4f46e5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sub-tab-pane {
+  display: none;
+}
+
+.sub-tab-pane.active {
+  display: block;
 }
 
 .tab-content {

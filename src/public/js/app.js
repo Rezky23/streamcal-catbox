@@ -53,6 +53,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Sub-Tab Switching (Image to URL: Upload Files & Upload from URL)
+  const subTabButtons = document.querySelectorAll('.sub-tab-btn');
+  const subTabPanes = document.querySelectorAll('.sub-tab-pane');
+
+  subTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const subtabId = btn.getAttribute('data-subtab');
+      subTabButtons.forEach(b => b.classList.remove('active'));
+      subTabPanes.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const targetPane = document.getElementById(subtabId);
+      if (targetPane) targetPane.classList.add('active');
+    });
+  });
+
   // Dropzone Events
   if (dropzone && fileInput) {
     dropzone.addEventListener('click', () => fileInput.click());
@@ -110,8 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (filesToUpload.length > 0) {
-      // Switch to file tab if not active
-      document.querySelector('[data-tab="tab-file"]')?.click();
+      // Switch to image-url tab and files sub-tab if not active
+      document.querySelector('[data-tab="tab-image-url"]')?.click();
+      document.querySelector('[data-subtab="subtab-upload-files"]')?.click();
       handleUploadBatch(filesToUpload);
     }
   });

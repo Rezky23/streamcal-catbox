@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Streamcal - Fast, Permanent File & Image Hosting</title>
   <link rel="icon" type="image/svg+xml" href="/assets/mascot.svg">
-  <link rel="stylesheet" href="/css/style.css?v=2.5">
+  <link rel="stylesheet" href="/css/style.css?v=2.6">
   <style>
     /* Instant Anti-Cache & Ultra-Clean Downloader Styles */
     .dl-card-content {
@@ -357,6 +357,23 @@
       }
     }
 
+    /* Adaptive Brand Text for Dark & Light Mode */
+    .streamcal-brand {
+      font-family: var(--font-brand);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: inline-block;
+      transition: transform 0.2s ease, text-shadow 0.2s ease, color 0.2s ease;
+    }
+    [data-theme="dark"] .streamcal-brand {
+      color: #ffffff !important;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.35), 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    [data-theme="light"] .streamcal-brand {
+      color: #0f172a !important;
+      text-shadow: none !important;
+    }
+
     /* Tabs Header Anti-Scrollbar Fix */
     .tabs-header {
       overflow-x: auto !important;
@@ -367,6 +384,77 @@
       display: none !important;
       width: 0 !important;
       height: 0 !important;
+    }
+
+    /* Active & Inactive Tab Buttons (Light & Dark Mode) */
+    .tab-btn {
+      color: var(--text-muted) !important;
+      transition: all 0.2s ease;
+      border-bottom: 2px solid transparent !important;
+    }
+    .tab-btn:hover {
+      color: var(--text-main) !important;
+      background-color: rgba(125, 125, 125, 0.05);
+    }
+    [data-theme="dark"] .tab-btn.active {
+      color: #818cf8 !important;
+      border-bottom-color: var(--accent-primary) !important;
+      background-color: var(--surface-color) !important;
+      font-weight: 700 !important;
+    }
+    [data-theme="light"] .tab-btn.active {
+      color: #4f46e5 !important;
+      border-bottom-color: #4f46e5 !important;
+      background-color: var(--surface-color) !important;
+      font-weight: 700 !important;
+    }
+
+    /* Sub-Tab Switcher for Image to URL */
+    .sub-tab-switcher-wrap {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 18px;
+    }
+    .sub-tab-switcher {
+      display: inline-flex;
+      background: var(--surface-alt);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 6px;
+    }
+    .sub-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .sub-tab-btn:hover {
+      color: var(--text-main);
+    }
+    .sub-tab-btn.active {
+      background: var(--surface-color);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      font-weight: 700;
+    }
+    [data-theme="light"] .sub-tab-btn.active {
+      color: #4f46e5;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    .sub-tab-pane {
+      display: none;
+    }
+    .sub-tab-pane.active {
+      display: block;
     }
 
     /* Music Recognizer Ultra-Clean Styles */
@@ -819,44 +907,70 @@
     <!-- Upload Card -->
     <div class="main-card">
       <!-- Tabs Navigation -->
-      <nav class="tabs-header" aria-label="Upload modes">
-        <button class="tab-btn active" data-tab="tab-file">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload Files
-        </button>
-        <button class="tab-btn" data-tab="tab-url">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Upload from URL
+      <!-- Tabs Navigation (5 categories requested) -->
+      <nav class="tabs-header" aria-label="Tool categories">
+        <button class="tab-btn active" data-tab="tab-image-url">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          image to url
         </button>
         <button class="tab-btn" data-tab="tab-downloader">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          YouTube &amp; TikTok
+          Youtube/Tiktok
         </button>
         <button class="tab-btn" data-tab="tab-recognize">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          Cari Lagu
+          Search Lagu
         </button>
         <button class="tab-btn" data-tab="tab-history">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Recent Uploads
+          Recent
         </button>
         <button class="tab-btn" data-tab="tab-faq">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          FAQ
+          faq
         </button>
       </nav>
 
-      <!-- Tab 1: File Upload (Drag & Drop) -->
-      <div id="tab-file" class="tab-content active">
-        <div class="dropzone" id="dropzone">
-          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          <div class="dropzone-title">Drop your files here, or <span style="color:var(--accent-primary)">browse</span></div>
-          <div class="dropzone-subtitle">Supports images and audio up to 2MB. Tip: You can also paste directly with <strong>Ctrl+V</strong>!</div>
-          <input type="file" id="fileInput" class="file-input" accept="image/*,audio/*" multiple>
+      <!-- Category 1: image to url (Upload Files & Upload from URL) -->
+      <div id="tab-image-url" class="tab-content active">
+        <!-- Sub-tab Category Switcher -->
+        <div class="sub-tab-switcher-wrap">
+          <div class="sub-tab-switcher">
+            <button type="button" class="sub-tab-btn active" data-subtab="subtab-upload-files">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Upload Files</span>
+            </button>
+            <button type="button" class="sub-tab-btn" data-subtab="subtab-upload-url">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span>Upload from URL</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Subtab Pane 1: File Upload (Drag & Drop) -->
+        <div id="subtab-upload-files" class="sub-tab-pane active">
+          <div class="dropzone" id="dropzone">
+            <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <div class="dropzone-title">Drop your files here, or <span style="color:var(--accent-primary)">browse</span></div>
+            <div class="dropzone-subtitle">Supports images and audio up to 2MB. Tip: You can also paste directly with <strong>Ctrl+V</strong>!</div>
+            <input type="file" id="fileInput" class="file-input" accept="image/*,audio/*" multiple>
+          </div>
+        </div>
+
+        <!-- Subtab Pane 2: Upload from URL -->
+        <div id="subtab-upload-url" class="sub-tab-pane">
+          <form id="urlUploadForm" class="url-upload-form">
+            <label class="input-label" for="remoteUrlInput">Remote Image or Audio URL:</label>
+            <div class="url-upload-input-group">
+              <input type="url" id="remoteUrlInput" class="url-input" placeholder="https://example.com/image.png or audio.mp3" required>
+              <button type="submit" id="urlUploadBtn" class="btn btn-primary">Upload from URL</button>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">Supports remote image and audio files up to 2MB. The file will be fetched and an instant short URL will be generated.</p>
+          </form>
         </div>
 
         <!-- Dynamic Live Upload Progress Queue -->
@@ -864,18 +978,6 @@
 
         <!-- Uploaded Results Container -->
         <div id="resultsContainer"></div>
-      </div>
-
-      <!-- Tab 2: Upload from URL -->
-      <div id="tab-url" class="tab-content">
-        <form id="urlUploadForm" class="url-upload-form">
-          <label class="input-label" for="remoteUrlInput">Remote Image or Audio URL:</label>
-          <div class="url-upload-input-group">
-            <input type="url" id="remoteUrlInput" class="url-input" placeholder="https://example.com/image.png or audio.mp3" required>
-            <button type="submit" id="urlUploadBtn" class="btn btn-primary">Upload from URL</button>
-          </div>
-          <p style="font-size:0.85rem; color:var(--text-muted)">Supports remote image and audio files up to 2MB. The file will be fetched and an instant short URL will be generated.</p>
-        </form>
       </div>
 
       <!-- Tab: Media Downloader (YouTube & TikTok) -->
