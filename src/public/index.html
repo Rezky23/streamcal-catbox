@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Streamcal - Fast, Permanent File & Image Hosting</title>
-  <meta name="description" content="Streamcal - Ultra-fast, lightweight image and file to URL hosting. Instant direct links, no ads, permanent storage.">
   <link rel="icon" type="image/svg+xml" href="/assets/mascot.svg">
-  <link rel="stylesheet" href="/css/style.css?v=2.2">
+  <link rel="stylesheet" href="/css/style.css?v=2.5">
   <style>
     /* Instant Anti-Cache & Ultra-Clean Downloader Styles */
     .dl-card-content {
@@ -357,8 +356,438 @@
         justify-content: center;
       }
     }
+
+    /* Tabs Header Anti-Scrollbar Fix */
+    .tabs-header {
+      overflow-x: auto !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    .tabs-header::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    /* Music Recognizer Ultra-Clean Styles */
+    .rec-container {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+    }
+    .rec-hero-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rec-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rec-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .rec-platform-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .rec-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .rec-tag-ai {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #818cf8;
+    }
+    .rec-tag-mic {
+      background: rgba(236, 72, 153, 0.12);
+      border: 1px solid rgba(236, 72, 153, 0.35);
+      color: #f472b6;
+    }
+    .rec-tag-fast {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    /* Dropzone */
+    .rec-dropzone {
+      border: 2px dashed var(--border-color) !important;
+      background: var(--surface-alt) !important;
+      border-radius: var(--radius-md) !important;
+      padding: 30px 20px !important;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .rec-dropzone:hover, .rec-dropzone.dragover {
+      border-color: var(--accent-primary) !important;
+      background: rgba(99, 102, 241, 0.06) !important;
+      box-shadow: 0 0 25px rgba(99, 102, 241, 0.2);
+    }
+    .rec-wave-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 44px;
+    }
+    .rec-wave-bar {
+      display: inline-block;
+      width: 5px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #6366f1, #ec4899);
+      animation: recWavePulse 1.4s ease-in-out infinite alternate;
+    }
+    .rec-wave-bar:nth-child(1) { height: 16px; animation-delay: 0.1s; }
+    .rec-wave-bar:nth-child(2) { height: 28px; animation-delay: 0.25s; }
+    .rec-wave-bar:nth-child(3) { height: 42px; animation-delay: 0.4s; }
+    .rec-wave-bar:nth-child(4) { height: 32px; animation-delay: 0.15s; }
+    .rec-wave-bar:nth-child(5) { height: 20px; animation-delay: 0.3s; }
+    @keyframes recWavePulse {
+      0% { transform: scaleY(0.4); opacity: 0.6; }
+      100% { transform: scaleY(1.1); opacity: 1; }
+    }
+    .rec-dropzone-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .rec-dropzone-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 480px;
+    }
+
+    /* Action Buttons Row */
+    .rec-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .rec-action-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      padding: 10px 18px !important;
+      border-radius: var(--radius-sm) !important;
+      font-size: 0.88rem !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      border: 1px solid var(--border-color) !important;
+      background: var(--surface-color) !important;
+      color: var(--text-main) !important;
+      text-decoration: none !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    .rec-action-btn:hover {
+      background: var(--surface-alt) !important;
+      border-color: var(--accent-primary) !important;
+      transform: translateY(-1px);
+    }
+    .rec-btn-primary {
+      background: var(--accent-gradient) !important;
+      color: #ffffff !important;
+      border: none !important;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
+    }
+    .rec-btn-primary:hover {
+      box-shadow: 0 6px 22px rgba(99, 102, 241, 0.5) !important;
+      transform: translateY(-2px) !important;
+    }
+    .rec-btn-mic.recording {
+      background: rgba(239, 68, 68, 0.18) !important;
+      border-color: #ef4444 !important;
+      color: #f87171 !important;
+      animation: recPulseRecording 1.2s infinite alternate;
+    }
+    @keyframes recPulseRecording {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      100% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+    .rec-mic-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: recBlink 0.8s infinite;
+    }
+    @keyframes recBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    /* Staged Audio File Preview Box */
+    .rec-selected-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+    .rec-selected-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .rec-file-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .rec-file-icon {
+      font-size: 1.5rem;
+    }
+    .rec-file-name {
+      font-weight: 700;
+      font-size: 0.94rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rec-file-size {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+    .rec-btn-remove {
+      background: transparent !important;
+      border: none !important;
+      color: var(--text-muted) !important;
+      cursor: pointer;
+      padding: 6px;
+      font-size: 1.1rem;
+      border-radius: 4px;
+    }
+    .rec-btn-remove:hover {
+      color: #ef4444 !important;
+      background: rgba(239, 68, 68, 0.1) !important;
+    }
+    .rec-audio-preview {
+      width: 100%;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+
+    /* Result Card */
+    .rec-result-card {
+      background: var(--surface-alt);
+      border: 1.5px solid rgba(99, 102, 241, 0.35);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .rec-result-layout {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 22px;
+      align-items: flex-start;
+    }
+    .rec-cover-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      background: #000;
+    }
+    .rec-cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .rec-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rec-badge-match {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      width: fit-content;
+    }
+    .rec-track-title {
+      font-family: var(--font-brand);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.25;
+      letter-spacing: -0.3px;
+    }
+    .rec-track-artist {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #818cf8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rec-meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .rec-meta-chip {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .rec-meta-chip strong {
+      color: var(--text-main);
+    }
+    .rec-player-section {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .rec-player-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rec-links-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .rec-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-decoration: none !important;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .rec-link-youtube {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #f87171 !important;
+    }
+    .rec-link-youtube:hover {
+      background: rgba(239, 68, 68, 0.25);
+      transform: translateY(-1px);
+    }
+    .rec-link-spotify {
+      background: rgba(29, 185, 84, 0.15);
+      border: 1px solid rgba(29, 185, 84, 0.35);
+      color: #1ed760 !important;
+    }
+    .rec-link-spotify:hover {
+      background: rgba(29, 185, 84, 0.25);
+      transform: translateY(-1px);
+    }
+    .rec-link-apple {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: var(--text-main) !important;
+    }
+    .rec-link-apple:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+    .rec-lyrics-box {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+    .rec-lyrics-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rec-lyrics-content {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: pre-line;
+      line-height: 1.7;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    @media (max-width: 680px) {
+      .rec-result-layout {
+        grid-template-columns: 1fr;
+      }
+      .rec-cover-wrap {
+        max-width: 200px;
+        margin: 0 auto;
+      }
+      .rec-buttons-row {
+        flex-direction: column;
+      }
+      .rec-action-btn {
+        width: 100%;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <!-- Top Navigation Header -->
@@ -405,7 +834,7 @@
         </button>
         <button class="tab-btn" data-tab="tab-recognize">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          Cari Lagu (Shazam)
+          Cari Lagu
         </button>
         <button class="tab-btn" data-tab="tab-history">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -512,27 +941,27 @@
         </div>
       </div>
 
-      <!-- Tab: Music Recognizer (Shazam Audio Search) -->
+      <!-- Tab: Music Recognizer (Audio Search) -->
       <div id="tab-recognize" class="tab-content">
         <div class="rec-container">
           <!-- Hero Header -->
           <div class="rec-hero-header">
             <h2 class="rec-title">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0088ff" stroke-width="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-              Cari &amp; Identifikasi Lagu (Shazam)
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Cari &amp; Identifikasi Lagu
             </h2>
-            <p class="rec-subtitle">Upload file audio atau rekaman potongan lagu, rekam langsung via mikrofon, atau masukkan URL audio untuk mengenali judul lagu, artis, lirik, dan album dengan teknologi Shazam.</p>
+            <p class="rec-subtitle">Upload file audio rekaman potongan lagu, rekam langsung via mikrofon, atau masukkan tautan audio untuk mengenali judul lagu, artis, lirik, dan album secara otomatis.</p>
             <div class="rec-platform-tags">
-              <span class="rec-tag rec-tag-shazam">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm4 0h-2v-6h2v6z"/></svg>
-                Shazam AI Engine
+              <span class="rec-tag rec-tag-ai">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                AI Audio Recognition
               </span>
               <span class="rec-tag rec-tag-mic">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                 Upload File / Live Mic
               </span>
               <span class="rec-tag rec-tag-fast">
-                ⚡ Akurat &amp; Cepat (1-2 Detik)
+                ⚡ Akurat &amp; Cepat (~1 Detik)
               </span>
             </div>
           </div>
@@ -577,7 +1006,7 @@
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
                 </div>
                 <input type="url" id="recAudioUrlInput" class="dl-search-input" placeholder="Masukkan URL langsung ke file audio (cth: https://example.com/lagu.mp3)">
-                <button type="button" id="recSubmitUrlBtn" class="dl-btn-submit" style="background:#0088ff !important;">
+                <button type="button" id="recSubmitUrlBtn" class="dl-btn-submit">
                   <span>Kenali Audio</span>
                 </button>
               </div>
@@ -598,7 +1027,7 @@
               <audio id="recSelectedAudioPlayer" class="rec-audio-preview" controls></audio>
               <button type="button" id="recSubmitFileBtn" class="rec-action-btn rec-btn-primary" style="margin-top:6px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                <span id="recSubmitFileBtnText">Kenali Lagu Sekarang (Shazam)</span>
+                <span id="recSubmitFileBtnText">Kenali Lagu Sekarang</span>
               </button>
             </div>
           </div>

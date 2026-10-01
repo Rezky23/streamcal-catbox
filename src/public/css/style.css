@@ -1009,8 +1009,20 @@ a:hover {
   }
 }
 
+/* Tabs Header Anti-Scrollbar Fix */
+.tabs-header {
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.tabs-header::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* ========================================================
-   AUDIO RECOGNIZER (SHAZAM) STYLES
+   AUDIO RECOGNIZER STYLES
    ======================================================== */
 .rec-container {
   display: flex;
@@ -1057,10 +1069,10 @@ a:hover {
   font-weight: 700;
 }
 
-.rec-tag-shazam {
-  background: rgba(0, 136, 255, 0.12);
-  border: 1px solid rgba(0, 136, 255, 0.35);
-  color: #38bdf8;
+.rec-tag-ai {
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #818cf8;
 }
 
 .rec-tag-mic {
@@ -1415,16 +1427,6 @@ a:hover {
   text-decoration: none !important;
   transition: all 0.2s ease;
   cursor: pointer;
-}
-
-.rec-link-shazam {
-  background: #0088ff;
-  color: #ffffff !important;
-}
-
-.rec-link-shazam:hover {
-  background: #0070d6;
-  transform: translateY(-1px);
 }
 
 .rec-link-youtube {

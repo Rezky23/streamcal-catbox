@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================================
-  // AUDIO RECOGNIZER / SHAZAM (Upload, Mic & Recognize)
+  // AUDIO RECOGNIZER (Upload, Mic & Recognize)
   // ========================================================
   const recDropzone = document.getElementById('recDropzone');
   const recFileInput = document.getElementById('recFileInput');
@@ -705,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentAudioFile) return;
 
     recSubmitFileBtn.disabled = true;
-    if (recSubmitFileBtnText) recSubmitFileBtnText.innerHTML = '<span class="dl-spinner"></span> Mengidentifikasi Lagu via Shazam...';
+    if (recSubmitFileBtnText) recSubmitFileBtnText.innerHTML = '<span class="dl-spinner"></span> Mengidentifikasi lagu...';
     if (recResultContainer) recResultContainer.innerHTML = '';
 
     const formData = new FormData();
@@ -727,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showRecognizeError('Terjadi kesalahan menghubungi server: ' + err.message);
     } finally {
       recSubmitFileBtn.disabled = false;
-      if (recSubmitFileBtnText) recSubmitFileBtnText.textContent = 'Kenali Lagu Sekarang (Shazam)';
+      if (recSubmitFileBtnText) recSubmitFileBtnText.textContent = 'Kenali Lagu Sekarang';
     }
   });
 
@@ -781,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // Render Shazam Match Result
+  // Render Song Match Result
   function renderRecognizeResult(song) {
     if (!recResultContainer) return;
 
@@ -811,14 +811,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Action buttons
     let linksHtml = '';
-    if (song.shazamUrl) {
-      linksHtml += `
-        <a href="${escapeHtml(song.shazamUrl)}" target="_blank" rel="noopener noreferrer" class="rec-link-btn rec-link-shazam">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm4 0h-2v-6h2v6z"/></svg>
-          Buka di Shazam
-        </a>
-      `;
-    }
     if (song.youtubeSearchUrl) {
       linksHtml += `
         <a href="${escapeHtml(song.youtubeSearchUrl)}" target="_blank" rel="noopener noreferrer" class="rec-link-btn rec-link-youtube">
@@ -890,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div style="display:flex; justify-content:flex-end; border-top:1px solid var(--border-color); padding-top:14px;">
           <button type="button" id="recResetBtn" class="rec-action-btn" style="font-size:0.82rem; padding:6px 14px;">
-            <span>🔄 Identifikasi Lagu Lain</span>
+            <span>🔄 Cari Lagu Lain</span>
           </button>
         </div>
       </div>
