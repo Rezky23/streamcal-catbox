@@ -249,6 +249,224 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ========================================================
+  // MEDIA DOWNLOADER (YouTube & TikTok)
+  // ========================================================
+  const downloaderForm = document.getElementById('downloaderForm');
+  const mediaUrlInput = document.getElementById('mediaUrlInput');
+  const pasteMediaBtn = document.getElementById('pasteMediaBtn');
+  const fetchMediaBtn = document.getElementById('fetchMediaBtn');
+  const fetchMediaBtnText = document.getElementById('fetchMediaBtnText');
+  const downloaderResultContainer = document.getElementById('downloaderResultContainer');
+
+  pasteMediaBtn?.addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        mediaUrlInput.value = text.trim();
+        mediaUrlInput.focus();
+      }
+    } catch (_) {
+      mediaUrlInput.focus();
+    }
+  });
+
+  downloaderForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = mediaUrlInput.value.trim();
+    if (!url) return;
+
+    fetchMediaBtn.disabled = true;
+    fetchMediaBtnText.innerHTML = '<span class="dl-spinner"></span> Memproses...';
+    downloaderResultContainer.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/downloader/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      const json = await res.json();
+      if (json.success && json.data) {
+        renderMediaResult(json.data);
+      } else {
+        showDownloaderError(json.error || 'Gagal mengambil konten media.');
+      }
+    } catch (err) {
+      showDownloaderError('Terjadi kesalahan menghubungi server: ' + err.message);
+    } finally {
+      fetchMediaBtn.disabled = false;
+      fetchMediaBtnText.textContent = 'Ambil Media';
+    }
+  });
+
+  function showDownloaderError(msg) {
+    if (!downloaderResultContainer) return;
+    downloaderResultContainer.innerHTML = `
+      <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-sm); padding:14px 18px; color:#ef4444; font-size:0.9rem; margin-top:14px; display:flex; align-items:center; gap:8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>${escapeHtml(msg)}</span>
+      </div>
+    `;
+  }
+
+  function renderMediaResult(data) {
+    if (!downloaderResultContainer) return;
+
+    const isYt = data.platform === 'youtube';
+    const platformLabel = isYt ? 'YouTube' : 'TikTok';
+    const platformClass = isYt ? 'youtube' : 'tiktok';
+
+    const card = document.createElement('div');
+    card.className = 'media-result-card';
+
+    // Build video download buttons
+    let videoButtonsHtml = '';
+    if (data.videos && data.videos.length > 0) {
+      data.videos.forEach((vid, idx) => {
+        const cleanName = `${data.title.substring(0, 40)}_${vid.quality}.${vid.format}`;
+        const proxyUrl = `/api/downloader/download?url=${encodeURIComponent(vid.url)}&filename=${encodeURIComponent(cleanName)}`;
+        videoButtonsHtml += `
+          <a href="${proxyUrl}" class="btn-media-dl ${idx === 0 ? 'primary-dl' : ''}" download="${escapeHtml(cleanName)}" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Download Video (${escapeHtml(vid.quality)})
+          </a>
+        `;
+      });
+    }
+
+    // Build audio download buttons & preview
+    let audioSectionHtml = '';
+    if (data.audios && data.audios.length > 0) {
+      const primaryAudio = data.audios[0];
+      const audioCleanName = `${data.title.substring(0, 40)}_audio.${primaryAudio.format}`;
+      const audioProxyUrl = `/api/downloader/download?url=${encodeURIComponent(primaryAudio.url)}&filename=${encodeURIComponent(audioCleanName)}`;
+
+      audioSectionHtml = `
+        <div class="download-subgroup-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Audio MP3
+        </div>
+
+        <div class="audio-preview-wrap">
+          <audio controls preload="none" src="${escapeHtml(primaryAudio.url)}"></audio>
+        </div>
+
+        <div class="download-buttons-grid">
+          <a href="${audioProxyUrl}" class="btn-media-dl" download="${escapeHtml(audioCleanName)}" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download MP3 (${escapeHtml(primaryAudio.quality)})
+          </a>
+          <button type="button" class="btn-media-dl btn-streamcal-save" id="saveStreamcalBtn" data-audiourl="${escapeHtml(primaryAudio.url)}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+            <span id="saveStreamcalBtnText">Simpan ke Streamcal</span>
+          </button>
+        </div>
+
+        <div id="saveStreamcalResult"></div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="media-card-grid">
+        <div class="media-thumb-container">
+          <img src="${escapeHtml(data.thumbnail || '/assets/mascot.svg')}" alt="Thumbnail" loading="lazy">
+          ${data.durationFormatted ? `<span class="media-duration-tag">${escapeHtml(data.durationFormatted)}</span>` : ''}
+        </div>
+
+        <div class="media-details">
+          <div>
+            <div class="media-meta-bar" style="margin-bottom:6px;">
+              <span class="platform-pill ${platformClass}">${platformLabel}</span>
+              ${data.author ? `<span class="media-author-pill">${escapeHtml(data.author)}</span>` : ''}
+            </div>
+            <h4 class="media-main-title">${escapeHtml(data.title)}</h4>
+          </div>
+
+          <div class="download-options-group">
+            ${videoButtonsHtml ? `
+              <div class="download-subgroup-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+                Video MP4
+              </div>
+              <div class="download-buttons-grid">
+                ${videoButtonsHtml}
+              </div>
+            ` : ''}
+
+            ${audioSectionHtml}
+          </div>
+        </div>
+      </div>
+    `;
+
+    downloaderResultContainer.appendChild(card);
+
+    // Save to Streamcal Click Handler
+    const saveBtn = card.querySelector('#saveStreamcalBtn');
+    const saveResultDiv = card.querySelector('#saveStreamcalResult');
+    const saveBtnText = card.querySelector('#saveStreamcalBtnText');
+
+    saveBtn?.addEventListener('click', async () => {
+      const audioUrl = saveBtn.getAttribute('data-audiourl');
+      if (!audioUrl) return;
+
+      saveBtn.disabled = true;
+      saveBtnText.innerHTML = '<span class="dl-spinner"></span> Menyimpan...';
+      if (saveResultDiv) saveResultDiv.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/downloader/save-streamcal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: audioUrl,
+            title: data.title,
+            format: 'mp3'
+          })
+        });
+
+        const resJson = await res.json();
+        if (resJson.success && resJson.file) {
+          const f = resJson.file;
+          saveToHistory(f);
+
+          saveBtnText.textContent = 'Tersimpan!';
+          saveBtn.style.background = 'rgba(16, 185, 129, 0.3)';
+
+          if (saveResultDiv) {
+            saveResultDiv.innerHTML = `
+              <div class="saved-streamcal-box">
+                <div class="saved-streamcal-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Tersimpan di Streamcal! Tautan Langsung Permanen:
+                </div>
+                <div class="url-box" style="margin-top:4px;">
+                  <input type="text" class="url-input" value="${escapeHtml(f.url)}" readonly onclick="this.select()">
+                  <button type="button" class="btn btn-primary copy-btn" data-copy="${escapeHtml(f.url)}">Copy Link</button>
+                </div>
+              </div>
+            `;
+
+            const copyBtn = saveResultDiv.querySelector('.copy-btn');
+            copyBtn?.addEventListener('click', () => {
+              copyToClipboard(f.url, copyBtn);
+            });
+          }
+        } else {
+          alert(resJson.error || 'Gagal menyimpan ke Streamcal.');
+          saveBtn.disabled = false;
+          saveBtnText.textContent = 'Simpan ke Streamcal';
+        }
+      } catch (err) {
+        alert('Kesalahan saat menyimpan: ' + err.message);
+        saveBtn.disabled = false;
+        saveBtnText.textContent = 'Simpan ke Streamcal';
+      }
+    });
+  }
+
   // Render Result Card (Catbox styled output)
   function renderResultCard(file) {
     const card = document.createElement('div');
