@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.innerHTML = `
       <div class="dl-result-layout">
         <div class="dl-thumb-wrapper">
-          <img src="${escapeHtml(data.thumbnail || '/assets/mascot.svg')}" alt="Thumbnail" loading="lazy">
+          <img src="${escapeHtml(data.thumbnail || '/assets/mascot.svg')}" alt="Thumbnail" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='/assets/mascot.svg'">
           ${data.durationFormatted ? `<span class="dl-duration-pill">${escapeHtml(data.durationFormatted)}</span>` : ''}
         </div>
 
