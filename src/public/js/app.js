@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showDownloaderError('Terjadi kesalahan menghubungi server: ' + err.message);
     } finally {
       fetchMediaBtn.disabled = false;
-      fetchMediaBtnText.textContent = 'Ambil Media';
+      fetchMediaBtnText.textContent = 'Download';
     }
   });
 
@@ -451,7 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="saved-streamcal-box">
                 <div class="saved-streamcal-title">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  Tersimpan di Streamcal! Tautan Langsung Permanen:
+                  Tersimpan di Streamcal! Tautan Langsung:
+                  <span style="font-size:0.75rem; background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); border-radius:4px; padding:2px 6px; margin-left:6px;">⏱️ Hapus otomatis dalam 10 menit</span>
                 </div>
                 <div class="url-box" style="margin-top:4px;">
                   <input type="text" class="url-input" value="${escapeHtml(f.url)}" readonly onclick="this.select()">

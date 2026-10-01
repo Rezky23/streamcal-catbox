@@ -130,6 +130,9 @@ async function saveToStreamcal(req, res) {
 
     const originalName = `${safeTitle || shortId}.${cleanExt}`;
 
+    // Otomatis terhapus setelah 10 menit (600.000 ms)
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
     const fileData = {
       shortId,
       storedName,
@@ -141,7 +144,8 @@ async function saveToStreamcal(req, res) {
       data: buffer,
       url: directUrl,
       uploaderIp: req.ip || req.headers['x-forwarded-for'] || null,
-      source: 'downloader_import'
+      source: 'downloader_import',
+      expiresAt: expiresAt
     };
 
     const saved = await fileService.saveFile(fileData);
@@ -155,7 +159,9 @@ async function saveToStreamcal(req, res) {
         url: saved.url,
         size: saved.size,
         mimeType: saved.mimeType,
-        extension: saved.extension
+        extension: saved.extension,
+        expiresAt: expiresAt,
+        expiresIn: '10 menit'
       }
     });
   } catch (error) {

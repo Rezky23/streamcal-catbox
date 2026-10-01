@@ -56,8 +56,13 @@ const fileSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      enum: ['web_upload', 'url_upload', 'api'],
+      enum: ['web_upload', 'url_upload', 'api', 'downloader_import'],
       default: 'web_upload'
+    },
+    // Expiration timestamp for temporary files (e.g. 10 minutes auto-delete for downloader media)
+    expiresAt: {
+      type: Date,
+      default: null
     }
   },
   {
@@ -66,6 +71,9 @@ const fileSchema = new mongoose.Schema(
     toObject: { virtuals: true }
   }
 );
+
+// TTL index for automatic expiration in MongoDB Atlas (documents expire when expiresAt <= now)
+fileSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Compound index for fast lookup
 fileSchema.index({ hash: 1, size: 1 });

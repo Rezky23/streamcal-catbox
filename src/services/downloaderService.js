@@ -328,13 +328,16 @@ async function resolveTikTok(rawUrl) {
           }
         }
 
-        if (audios.length === 0 && d.music) {
-          audios.push({
-            quality: 'Original Audio (MP3)',
-            format: 'mp3',
-            url: makeUrl(d.music),
-            type: 'audio'
-          });
+        if (audios.length === 0) {
+          const directMusic = d.music_info?.play || d.music_info?.play_url || makeUrl(d.music);
+          if (directMusic) {
+            audios.push({
+              quality: 'Original Audio (MP3)',
+              format: 'mp3',
+              url: directMusic,
+              type: 'audio'
+            });
+          }
         }
       }
     } catch (err) {

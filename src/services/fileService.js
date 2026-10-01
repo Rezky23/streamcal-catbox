@@ -50,6 +50,12 @@ class FileService {
         });
 
         if (file) {
+          // If file is past its expiration time (e.g. 10 minutes auto-delete), purge and return null
+          if (file.expiresAt && new Date(file.expiresAt) <= new Date()) {
+            File.deleteOne({ _id: file._id }).exec();
+            return null;
+          }
+
           File.updateOne({ _id: file._id }, { $inc: { views: 1 } }).exec();
           return file;
         }
@@ -61,11 +67,21 @@ class FileService {
     // Fallback store
     if (memoryStore.has(cleanName)) {
       const f = memoryStore.get(cleanName);
+      if (f.expiresAt && new Date(f.expiresAt) <= new Date()) {
+        memoryStore.delete(cleanName);
+        memoryStore.delete(f.shortId);
+        return null;
+      }
       f.views = (f.views || 0) + 1;
       return f;
     }
     if (memoryStore.has(shortId)) {
       const f = memoryStore.get(shortId);
+      if (f.expiresAt && new Date(f.expiresAt) <= new Date()) {
+        memoryStore.delete(f.storedName);
+        memoryStore.delete(shortId);
+        return null;
+      }
       f.views = (f.views || 0) + 1;
       return f;
     }
@@ -90,6 +106,12 @@ class FileService {
         }).select('+data');
 
         if (file) {
+          // If file is past its expiration time (e.g. 10 minutes auto-delete), purge and return null
+          if (file.expiresAt && new Date(file.expiresAt) <= new Date()) {
+            File.deleteOne({ _id: file._id }).exec();
+            return null;
+          }
+
           File.updateOne({ _id: file._id }, { $inc: { views: 1 } }).exec();
           return file;
         }
@@ -101,11 +123,21 @@ class FileService {
     // Fallback store
     if (memoryStore.has(cleanName)) {
       const f = memoryStore.get(cleanName);
+      if (f.expiresAt && new Date(f.expiresAt) <= new Date()) {
+        memoryStore.delete(cleanName);
+        memoryStore.delete(f.shortId);
+        return null;
+      }
       f.views = (f.views || 0) + 1;
       return f;
     }
     if (memoryStore.has(shortId)) {
       const f = memoryStore.get(shortId);
+      if (f.expiresAt && new Date(f.expiresAt) <= new Date()) {
+        memoryStore.delete(f.storedName);
+        memoryStore.delete(shortId);
+        return null;
+      }
       f.views = (f.views || 0) + 1;
       return f;
     }
