@@ -6,7 +6,358 @@
   <title>Streamcal - Fast, Permanent File & Image Hosting</title>
   <meta name="description" content="Streamcal - Ultra-fast, lightweight image and file to URL hosting. Instant direct links, no ads, permanent storage.">
   <link rel="icon" type="image/svg+xml" href="/assets/mascot.svg">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=2.2">
+  <style>
+    /* Instant Anti-Cache & Ultra-Clean Downloader Styles */
+    .dl-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+    }
+    .dl-hero-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .dl-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+    .dl-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .dl-platform-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .dl-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .dl-tag-yt {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #f87171;
+    }
+    .dl-tag-tt {
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      color: #22d3ee;
+    }
+    .dl-tag-free {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+    .dl-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .dl-search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-alt);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      transition: all 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .dl-search-box:focus-within {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25), 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+    .dl-search-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 10px;
+      color: var(--text-dim);
+    }
+    .dl-search-input {
+      flex: 1;
+      min-width: 0;
+      background: transparent !important;
+      border: none !important;
+      color: var(--text-main) !important;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 10px 8px;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    .dl-search-input::placeholder {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+    .dl-btn-paste {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface-color) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-muted) !important;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .dl-btn-paste:hover {
+      background: var(--surface-alt) !important;
+      color: var(--text-main) !important;
+      border-color: var(--accent-primary) !important;
+    }
+    .dl-btn-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--accent-gradient) !important;
+      border: none !important;
+      color: #ffffff !important;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
+      transition: all 0.2s ease;
+    }
+    .dl-btn-submit:hover:not(:disabled) {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5);
+    }
+    .dl-btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+    .dl-quick-hints {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.8rem;
+      padding: 0 4px;
+    }
+    .dl-hint-label {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+    .dl-hint-btn {
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dl-hint-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.08);
+    }
+    .dl-result-card {
+      margin-top: 14px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      animation: fadeIn 0.3s ease-out;
+    }
+    .dl-result-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 22px;
+    }
+    .dl-thumb-wrapper {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16 / 9;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+    .dl-thumb-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .dl-duration-pill {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+    .dl-meta-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .dl-title-text {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.4;
+      margin-top: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .dl-creator-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .dl-creator-name {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .dl-actions-block {
+      border-top: 1px solid var(--border-color);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dl-section-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dl-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .dl-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none !important;
+      transition: all 0.2s ease;
+    }
+    .dl-action-btn.btn-video-primary {
+      background: var(--accent-gradient);
+      color: #fff;
+      border: none;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+    .dl-action-btn.btn-video-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+    }
+    .dl-action-btn.btn-video-secondary {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .dl-action-btn.btn-video-secondary:hover {
+      border-color: var(--accent-primary);
+      background: var(--surface-alt);
+    }
+    .dl-action-btn.btn-audio-dl {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .dl-action-btn.btn-audio-dl:hover {
+      border-color: var(--accent-primary);
+      background: var(--surface-alt);
+    }
+    .dl-action-btn.btn-audio-save {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #10b981;
+    }
+    .dl-action-btn.btn-audio-save:hover {
+      background: rgba(16, 185, 129, 0.22);
+      border-color: #10b981;
+      transform: translateY(-1px);
+    }
+    .dl-audio-player-box {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dl-audio-player-box audio {
+      width: 100%;
+      height: 36px;
+      outline: none;
+    }
+    @media (max-width: 680px) {
+      .dl-result-layout {
+        grid-template-columns: 1fr;
+      }
+      .dl-search-box {
+        flex-wrap: wrap;
+      }
+      .dl-search-input {
+        width: 100%;
+        order: 1;
+      }
+      .dl-search-icon {
+        display: none;
+      }
+      .dl-btn-paste {
+        order: 2;
+        flex: 1;
+        justify-content: center;
+      }
+      .dl-btn-submit {
+        order: 3;
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -96,46 +447,63 @@
 
       <!-- Tab: Media Downloader (YouTube & TikTok) -->
       <div id="tab-downloader" class="tab-content">
-        <div class="downloader-wrap">
-          <div class="downloader-header">
-            <div>
-              <h3 style="font-size:1.15rem; font-weight:700;">Unduh Video &amp; Audio</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">Download video MP4 (tanpa watermark) dan audio MP3 dari YouTube &amp; TikTok.</p>
+        <div class="dl-card-content">
+
+          <!-- Header with Badges -->
+          <div class="dl-hero-header">
+            <div class="dl-hero-title-group">
+              <h2 class="dl-title">Unduh Video &amp; Audio</h2>
+              <p class="dl-subtitle">Download video MP4 bebas watermark &amp; lagu MP3 jernih dari YouTube dan TikTok langsung tanpa ribet.</p>
             </div>
-            <div class="downloader-badges">
-              <span class="platform-pill youtube">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                YouTube
+            
+            <div class="dl-platform-tags">
+              <span class="dl-tag dl-tag-yt">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                YouTube HD &amp; MP3
               </span>
-              <span class="platform-pill tiktok">
+              <span class="dl-tag dl-tag-tt">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-                TikTok
+                TikTok No Watermark
+              </span>
+              <span class="dl-tag dl-tag-free">
+                ⚡ 100% Gratis &amp; Cepat
               </span>
             </div>
           </div>
 
-          <form id="downloaderForm" class="downloader-form">
-            <div class="dl-input-wrapper">
+          <!-- Modern Search/Download Bar -->
+          <form id="downloaderForm" class="dl-form">
+            <div class="dl-search-box">
+              <div class="dl-search-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              </div>
               <input 
                 type="url" 
                 id="mediaUrlInput" 
-                class="url-input" 
+                class="dl-search-input" 
                 placeholder="Tempel tautan YouTube atau TikTok (cth: https://youtu.be/... atau vt.tiktok.com/...)" 
                 required 
                 autocomplete="off"
               >
-              <button type="button" id="pasteMediaBtn" class="btn-paste" title="Tempel dari Clipboard">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-                Tempel
+              <button type="button" id="pasteMediaBtn" class="dl-btn-paste" title="Tempel link dari clipboard">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                <span>Tempel</span>
               </button>
-              <button type="submit" id="fetchMediaBtn" class="btn btn-primary" style="white-space:nowrap; padding:10px 20px;">
+              <button type="submit" id="fetchMediaBtn" class="dl-btn-submit">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <span id="fetchMediaBtnText">Ambil Media</span>
               </button>
             </div>
+
+            <!-- Quick Example Chips -->
+            <div class="dl-quick-hints">
+              <span class="dl-hint-label">Contoh cepat:</span>
+              <button type="button" class="dl-hint-btn" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">YouTube Video</button>
+              <button type="button" class="dl-hint-btn" data-url="https://www.tiktok.com/@tiktok/video/7106594312292453675">TikTok Video</button>
+            </div>
           </form>
 
-          <!-- Downloader Results / Preview Container -->
+          <!-- Result Container -->
           <div id="downloaderResultContainer"></div>
         </div>
       </div>
@@ -209,6 +577,6 @@
     </div>
   </footer>
 
-  <script src="/js/app.js"></script>
+  <script src="/js/app.js?v=2.2"></script>
 </body>
 </html>

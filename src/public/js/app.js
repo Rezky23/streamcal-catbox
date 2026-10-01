@@ -301,10 +301,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Quick Hints Click Handler
+  document.querySelectorAll('.dl-hint-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const hintUrl = btn.getAttribute('data-url');
+      if (hintUrl && mediaUrlInput) {
+        mediaUrlInput.value = hintUrl;
+        downloaderForm?.dispatchEvent(new Event('submit'));
+      }
+    });
+  });
+
   function showDownloaderError(msg) {
     if (!downloaderResultContainer) return;
     downloaderResultContainer.innerHTML = `
-      <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-sm); padding:14px 18px; color:#ef4444; font-size:0.9rem; margin-top:14px; display:flex; align-items:center; gap:8px;">
+      <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-sm); padding:14px 18px; color:#ef4444; font-size:0.9rem; margin-top:10px; display:flex; align-items:center; gap:8px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span>${escapeHtml(msg)}</span>
       </div>
@@ -316,10 +327,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isYt = data.platform === 'youtube';
     const platformLabel = isYt ? 'YouTube' : 'TikTok';
-    const platformClass = isYt ? 'youtube' : 'tiktok';
+    const platformTagClass = isYt ? 'dl-tag-yt' : 'dl-tag-tt';
 
     const card = document.createElement('div');
-    card.className = 'media-result-card';
+    card.className = 'dl-result-card';
 
     // Build video download buttons
     let videoButtonsHtml = '';
@@ -328,8 +339,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const cleanName = `${data.title.substring(0, 40)}_${vid.quality}.${vid.format}`;
         const proxyUrl = `/api/downloader/download?url=${encodeURIComponent(vid.url)}&filename=${encodeURIComponent(cleanName)}`;
         videoButtonsHtml += `
-          <a href="${proxyUrl}" class="btn-media-dl ${idx === 0 ? 'primary-dl' : ''}" download="${escapeHtml(cleanName)}" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <a href="${proxyUrl}" class="dl-action-btn ${idx === 0 ? 'btn-video-primary' : 'btn-video-secondary'}" download="${escapeHtml(cleanName)}" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Download Video (${escapeHtml(vid.quality)})
           </a>
         `;
@@ -344,22 +355,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const audioProxyUrl = `/api/downloader/download?url=${encodeURIComponent(primaryAudio.url)}&filename=${encodeURIComponent(audioCleanName)}`;
 
       audioSectionHtml = `
-        <div class="download-subgroup-title">
+        <div class="dl-section-label">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
           Audio MP3
         </div>
 
-        <div class="audio-preview-wrap">
+        <div class="dl-audio-player-box">
           <audio controls preload="none" src="${escapeHtml(primaryAudio.url)}"></audio>
         </div>
 
-        <div class="download-buttons-grid">
-          <a href="${audioProxyUrl}" class="btn-media-dl" download="${escapeHtml(audioCleanName)}" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div class="dl-buttons-row">
+          <a href="${audioProxyUrl}" class="dl-action-btn btn-audio-dl" download="${escapeHtml(audioCleanName)}" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download MP3 (${escapeHtml(primaryAudio.quality)})
           </a>
-          <button type="button" class="btn-media-dl btn-streamcal-save" id="saveStreamcalBtn" data-audiourl="${escapeHtml(primaryAudio.url)}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+          <button type="button" class="dl-action-btn btn-audio-save" id="saveStreamcalBtn" data-audiourl="${escapeHtml(primaryAudio.url)}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
             <span id="saveStreamcalBtnText">Simpan ke Streamcal</span>
           </button>
         </div>
@@ -369,28 +380,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     card.innerHTML = `
-      <div class="media-card-grid">
-        <div class="media-thumb-container">
+      <div class="dl-result-layout">
+        <div class="dl-thumb-wrapper">
           <img src="${escapeHtml(data.thumbnail || '/assets/mascot.svg')}" alt="Thumbnail" loading="lazy">
-          ${data.durationFormatted ? `<span class="media-duration-tag">${escapeHtml(data.durationFormatted)}</span>` : ''}
+          ${data.durationFormatted ? `<span class="dl-duration-pill">${escapeHtml(data.durationFormatted)}</span>` : ''}
         </div>
 
-        <div class="media-details">
+        <div class="dl-meta-details">
           <div>
-            <div class="media-meta-bar" style="margin-bottom:6px;">
-              <span class="platform-pill ${platformClass}">${platformLabel}</span>
-              ${data.author ? `<span class="media-author-pill">${escapeHtml(data.author)}</span>` : ''}
+            <div class="dl-creator-row">
+              <span class="dl-tag ${platformTagClass}">${platformLabel}</span>
+              ${data.author ? `<span class="dl-creator-name">${escapeHtml(data.author)}</span>` : ''}
             </div>
-            <h4 class="media-main-title">${escapeHtml(data.title)}</h4>
+            <h3 class="dl-title-text">${escapeHtml(data.title)}</h3>
           </div>
 
-          <div class="download-options-group">
+          <div class="dl-actions-block">
             ${videoButtonsHtml ? `
-              <div class="download-subgroup-title">
+              <div class="dl-section-label">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
                 Video MP4
               </div>
-              <div class="download-buttons-grid">
+              <div class="dl-buttons-row">
                 ${videoButtonsHtml}
               </div>
             ` : ''}
