@@ -95,7 +95,7 @@ class RecognizerService {
       if (!rawResult || !rawResult.track) {
         return {
           matched: false,
-          message: 'Lagu tidak dapat dikenali di database Shazam. Pastikan audio terdengar jelas tanpa terlalu banyak noise.'
+          message: 'Lagu tidak dapat dikenali. Pastikan audio terdengar jelas tanpa terlalu banyak noise atau vokal yang tertutup.'
         };
       }
 
@@ -166,7 +166,6 @@ class RecognizerService {
         genre,
         coverArt,
         previewAudio,
-        shazamUrl,
         appleMusicUrl,
         spotifyUrl,
         youtubeSearchUrl,

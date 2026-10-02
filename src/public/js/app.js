@@ -494,6 +494,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const recUrlBox = document.getElementById('recUrlBox');
   const recAudioUrlInput = document.getElementById('recAudioUrlInput');
   const recSubmitUrlBtn = document.getElementById('recSubmitUrlBtn');
+  const recToggleYtBtn = document.getElementById('recToggleYtBtn');
+  const recYtSearchBox = document.getElementById('recYtSearchBox');
+  const recYtSearchInput = document.getElementById('recYtSearchInput');
+  const recYtSearchBtn = document.getElementById('recYtSearchBtn');
   const recSelectedBox = document.getElementById('recSelectedBox');
   const recSelectedName = document.getElementById('recSelectedName');
   const recSelectedSize = document.getElementById('recSelectedSize');
@@ -577,9 +581,43 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!recUrlBox) return;
     if (recUrlBox.style.display === 'none' || !recUrlBox.style.display) {
       recUrlBox.style.display = 'block';
+      if (recYtSearchBox) recYtSearchBox.style.display = 'none';
       recAudioUrlInput?.focus();
     } else {
       recUrlBox.style.display = 'none';
+    }
+  });
+
+  // Toggle YouTube Direct Search Box
+  recToggleYtBtn?.addEventListener('click', () => {
+    if (!recYtSearchBox) return;
+    if (recYtSearchBox.style.display === 'none' || !recYtSearchBox.style.display) {
+      recYtSearchBox.style.display = 'block';
+      if (recUrlBox) recUrlBox.style.display = 'none';
+      recYtSearchInput?.focus();
+    } else {
+      recYtSearchBox.style.display = 'none';
+    }
+  });
+
+  function performDirectYtSearch(query) {
+    const q = (query || '').trim();
+    if (!q) {
+      alert('Silakan ketik judul lagu, nama artis, atau lirik untuk dicari di YouTube.');
+      return;
+    }
+    const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+    window.open(searchUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  recYtSearchBtn?.addEventListener('click', () => {
+    performDirectYtSearch(recYtSearchInput?.value);
+  });
+
+  recYtSearchInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      performDirectYtSearch(recYtSearchInput.value);
     }
   });
 
@@ -714,18 +752,54 @@ document.addEventListener('DOMContentLoaded', () => {
   // Show Error Card
   function showRecognizeError(msg) {
     if (!recResultContainer) return;
+
+    // Sanitize any remaining mention of third-party engine / Shazam
+    const safeMsg = (msg || '').replace(/shazam/gi, 'database musik');
+
     recResultContainer.innerHTML = `
-      <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:18px 20px; color:#ef4444; font-size:0.9rem; margin-top:14px; display:flex; flex-direction:column; gap:10px;">
+      <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:18px 20px; color:#ef4444; font-size:0.9rem; margin-top:14px; display:flex; flex-direction:column; gap:12px;">
         <div style="display:flex; align-items:center; gap:8px; font-weight:700;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span>Pencarian Lagu Gagal</span>
         </div>
-        <div style="color:var(--text-main);">${escapeHtml(msg)}</div>
+        <div style="color:var(--text-main); line-height:1.5;">${escapeHtml(safeMsg)}</div>
         <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
           💡 <strong>Tips:</strong> Pastikan audio berdurasi setidaknya 4-10 detik, memuat melodi atau vokal yang jelas tanpa terlalu banyak noise/suara latar.
         </div>
+
+        <!-- YouTube Search Fallback -->
+        <div style="margin-top:6px; padding-top:14px; border-top:1px solid rgba(239,68,68,0.25); display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:0.88rem; color:var(--text-main); font-weight:600; display:flex; align-items:center; gap:6px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <span>Cari Manual di YouTube:</span>
+          </div>
+          <div style="font-size:0.82rem; color:var(--text-muted);">
+            Lagu tidak terdeteksi otomatis? Ketik judul lagu atau penggalan lirik untuk dicari langsung di YouTube:
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:2px;">
+            <input type="text" id="recFallbackYtInput" placeholder="Ketik penggalan lirik atau artis..." style="flex:1; min-width:200px; padding:9px 14px; background:var(--surface-color); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:0.88rem; outline:none;">
+            <button type="button" id="recFallbackYtBtn" class="rec-action-btn rec-link-youtube" style="padding:9px 16px; font-weight:600; display:inline-flex; align-items:center; gap:6px; cursor:pointer; border-radius:var(--radius-sm);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <span>Cari di YouTube</span>
+            </button>
+          </div>
+        </div>
       </div>
     `;
+
+    const fallbackInput = document.getElementById('recFallbackYtInput');
+    const fallbackBtn = document.getElementById('recFallbackYtBtn');
+
+    fallbackBtn?.addEventListener('click', () => {
+      performDirectYtSearch(fallbackInput?.value);
+    });
+
+    fallbackInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performDirectYtSearch(fallbackInput.value);
+      }
+    });
   }
 
   // Render Song Match Result
