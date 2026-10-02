@@ -68,7 +68,7 @@ app.use(async (req, res, next) => {
 
 // Serve static frontend assets (clean, vanilla, ultra-lightweight)
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '1d',
+  maxAge: config.nodeEnv === 'production' ? '1d' : 0,
   etag: true
 }));
 
