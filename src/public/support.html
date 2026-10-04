@@ -1,437 +1,1039 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support Streamcal - Donasi &amp; Kontribusi Server</title>
-  <meta name="description" content="Dukung operasional server, bandwidth penyimpanan gambar dan file permanen Streamcal tanpa iklan.">
+  <title>Dukung Streamcal! | Streamcal</title>
+  <meta name="description" content="Dukung operasional server, bandwidth penyimpanan gambar dan file permanen Streamcal.">
   <link rel="icon" type="image/svg+xml" href="/assets/mascot.svg">
-  <link rel="stylesheet" href="/css/style.css?v=3.0">
+  <link rel="stylesheet" href="/css/style.css?v=3.1">
   <style>
-    /* Dedicated Support Page Styles */
-    .support-page-wrap {
-      max-width: 880px;
-      margin: 0 auto;
-      padding: 24px 20px 60px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+    /* Exact Tako Style Design System for Streamcal Support */
+    :root {
+      --tako-bg: #0b111a;
+      --tako-card: #131b26;
+      --tako-card-border: #1f2c3d;
+      --tako-input-bg: #16202e;
+      --tako-input-border: #223247;
+      --tako-text: #f8fafc;
+      --tako-text-muted: #94a3b8;
+      --tako-text-dim: #64748b;
+      --tako-blue: #3b82f6;
+      --tako-blue-hover: #2563eb;
+      --tako-pink: #ec4899;
+      --tako-green: #22c55e;
+      --tako-lime: #a3e635;
     }
-    .back-home-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-      width: fit-content;
-      text-decoration: none !important;
-      padding: 6px 12px;
-      background: var(--surface-color);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
+
+    body {
+      background-color: var(--tako-bg) !important;
+      color: var(--tako-text) !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
     }
-    .back-home-link:hover {
-      color: var(--text-main);
-      border-color: var(--accent-primary);
-      transform: translateX(-2px);
-    }
-    .support-hero-box {
+
+    /* Top Announcement Bar */
+    .top-announce-bar {
+      background: #1d4ed8;
+      color: #ffffff;
+      padding: 8px 16px;
+      font-size: 0.85rem;
       text-align: center;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      gap: 12px;
-      padding: 20px 10px;
+      position: relative;
     }
-    .support-hero-icon {
-      font-size: 3rem;
-      animation: heartPulse 1.8s infinite ease-in-out;
+    .top-announce-close {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 1.1rem;
+      opacity: 0.8;
+      padding: 0 4px;
     }
-    @keyframes heartPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
+    .top-announce-close:hover { opacity: 1; }
+
+    /* Centered Container */
+    .tako-container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
-    .support-page-title {
-      font-family: var(--font-brand);
-      font-size: 2rem;
-      font-weight: 900;
-      color: var(--text-main);
+
+    /* Navbar */
+    .tako-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0 10px;
+    }
+    .tako-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.35rem;
       letter-spacing: -0.5px;
     }
-    .support-page-subtitle {
-      max-width: 620px;
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      line-height: 1.6;
+    .tako-logo img {
+      width: 28px;
+      height: 28px;
     }
+    .tako-nav-btn {
+      background: #3b82f6;
+      color: #ffffff;
+      padding: 7px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: background 0.2s;
+      border: 1px solid #60a5fa;
+      box-shadow: 0 2px 0 #1d4ed8;
+    }
+    .tako-nav-btn:hover { background: #2563eb; }
 
-    /* Country / Region Selection Styles */
-    .support-countries-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-    @media (max-width: 640px) {
-      .support-countries-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    .support-country-btn {
-      background: var(--surface-color);
-      border: 1.5px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 10px 8px;
-      cursor: pointer;
+    /* Creator Profile Card */
+    .creator-card {
+      background: var(--tako-card);
+      border: 1px solid var(--tako-card-border);
+      border-radius: 16px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
+      gap: 16px;
+    }
+    .creator-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .creator-avatar-wrap {
+      display: flex;
       align-items: center;
-      gap: 4px;
-      transition: all 0.2s ease;
-      color: var(--text-main);
+      gap: 16px;
+    }
+    .creator-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      background: var(--tako-lime);
+      color: #0f172a;
+      font-weight: 900;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(163, 230, 53, 0.25);
       user-select: none;
     }
-    .support-country-btn:hover {
-      border-color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.08);
-      transform: translateY(-1px);
+    .creator-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: -0.5px;
     }
-    .support-country-btn.active {
-      border-color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.16);
-      color: #818cf8;
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    .creator-handle {
+      font-size: 0.88rem;
+      color: var(--tako-text-dim);
+      margin-top: 4px;
     }
-    .support-country-btn .country-flag {
-      font-size: 1.6rem;
-      line-height: 1;
-    }
-    .support-country-btn .country-name {
-      font-size: 0.82rem;
+    .creator-action-btn {
+      background: #22c55e;
+      color: #ffffff;
+      padding: 8px 20px;
+      border-radius: 8px;
       font-weight: 700;
-    }
-    .support-country-btn .country-badge {
-      font-size: 0.68rem;
-      font-weight: 600;
-      color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.12);
-      padding: 2px 7px;
-      border-radius: 10px;
-    }
-    .country-help-banner {
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-      border-radius: var(--radius-sm);
-      padding: 11px 14px;
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.55;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-top: 8px;
-      transition: all 0.2s ease;
-    }
-    .country-help-banner strong {
-      color: var(--text-main);
-    }
-
-    /* Currency Approx Badge */
-    .currency-approx-badge {
+      font-size: 0.88rem;
+      border: 1px solid #4ade80;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #15803d;
+      transition: all 0.2s;
+      text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.78rem;
+    }
+    .creator-action-btn:hover { background: #16a34a; }
+
+    /* Creator Nav Tabs */
+    .creator-tabs {
+      display: flex;
+      gap: 24px;
+      border-bottom: 1px solid var(--tako-card-border);
+      padding: 0 4px 0;
+    }
+    .creator-tab {
+      background: none;
+      border: none;
+      color: var(--tako-text-dim);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 10px 4px 12px;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .creator-tab:hover { color: #ffffff; }
+    .creator-tab.active {
+      color: #ffffff;
       font-weight: 700;
-      color: #818cf8;
-      background: rgba(99, 102, 241, 0.14);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-      padding: 4px 10px;
-      border-radius: 6px;
+    }
+    .creator-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--tako-blue);
+      border-radius: 2px;
     }
 
-    /* Country Cross-border Badges on Method Cards */
-    .method-tag-badge {
-      font-size: 0.65rem;
+    /* Main Form Card */
+    .form-card {
+      background: var(--tako-card);
+      border: 1px solid var(--tako-card-border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .form-card-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0;
+      user-select: none;
+    }
+
+    /* Field Group */
+    .tako-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tako-label {
+      font-size: 0.88rem;
       font-weight: 700;
+      color: #ffffff;
+    }
+    .tako-label span.req {
+      color: #ef4444;
+    }
+    .tako-input {
+      background: var(--tako-input-bg);
+      border: 1px solid var(--tako-input-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .tako-input:focus {
+      border-color: var(--tako-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .tako-input::placeholder {
+      color: #475569;
+    }
+
+    /* Checkbox Row */
+    .tako-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--tako-text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .tako-checkbox-row input {
+      accent-color: var(--tako-blue);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* Textarea with Emoji button */
+    .tako-textarea-wrap {
+      position: relative;
+    }
+    .tako-textarea {
+      background: var(--tako-input-bg);
+      border: 1px solid var(--tako-input-border);
+      border-radius: 10px;
+      padding: 12px 14px 40px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+      resize: vertical;
+      min-height: 95px;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+    .tako-textarea:focus {
+      border-color: var(--tako-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .tako-textarea::placeholder {
+      color: #475569;
+    }
+    .emoji-btn-wrap {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+    }
+    .emoji-pill-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: var(--tako-text-muted);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    }
+    .emoji-pill-btn:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    /* Currency Input Group */
+    .currency-input-group {
+      display: flex;
+      background: var(--tako-input-bg);
+      border: 1px solid var(--tako-input-border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .currency-input-group:focus-within {
+      border-color: var(--tako-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .currency-select {
+      background: #131b26;
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 14px;
+      cursor: pointer;
+      outline: none;
+      border-right: 1px solid var(--tako-input-border);
+    }
+    .currency-select option {
+      background: #0f172a;
+      color: #ffffff;
+    }
+    .amount-number-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 12px 14px;
+      outline: none;
+      width: 100%;
+      font-family: inherit;
+    }
+    .amount-number-input::placeholder {
+      color: #475569;
+    }
+
+    .alert-min-note {
+      font-size: 0.8rem;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Preset Amount Chips */
+    .preset-chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .preset-chip-btn {
+      background: #1a2432;
+      border: 1px solid #28374a;
+      color: #cbd5e1;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-chip-btn:hover {
+      background: #253346;
+      border-color: #3b82f6;
+      color: #ffffff;
+    }
+    .preset-chip-btn.active {
+      background: #3b82f6;
+      border-color: #60a5fa;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Power Up Section */
+    .powerup-box {
+      border: 1px solid var(--tako-card-border);
+      background: rgba(19, 27, 38, 0.6);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .powerup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .powerup-badge {
+      font-size: 0.75rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .powerup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 580px) {
+      .powerup-grid { grid-template-columns: 1fr; }
+    }
+    .powerup-item {
+      background: #17212e;
+      border: 1px solid #233144;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--tako-text-muted);
+    }
+    .powerup-item span.lock {
+      font-size: 0.82rem;
+      opacity: 0.6;
+    }
+
+    /* Pembayaran Section */
+    .payment-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-top: 1px solid var(--tako-card-border);
+      padding-top: 18px;
+    }
+    .payment-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    /* Country Dropdown Select */
+    .country-select-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .country-select {
+      background: var(--tako-input-bg);
+      border: 1px solid var(--tako-input-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+      font-family: inherit;
+    }
+    .country-select option {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    /* Payment Methods Cards Grid */
+    .tako-methods-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 540px) {
+      .tako-methods-grid { grid-template-columns: 1fr; }
+    }
+    .tako-method-card {
+      background: #16202e;
+      border: 1.5px solid #253346;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 54px;
+      user-select: none;
+    }
+    .tako-method-card:hover {
+      background: #1e2c3d;
+      border-color: var(--tako-blue);
+    }
+    .tako-method-card.active {
+      background: #1a2a3f;
+      border-color: var(--tako-blue);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+    }
+    .tako-method-card svg {
+      max-height: 26px;
+    }
+    .tako-method-text {
+      font-weight: 800;
+      font-size: 1.02rem;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tako-method-sub-badge {
+      font-size: 0.65rem;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
       padding: 2px 6px;
       border-radius: 4px;
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      display: inline-block;
-      margin-left: 6px;
+      font-weight: 600;
+    }
+
+    /* Order Summary Box */
+    .order-summary-box {
+      background: #16202e;
+      border: 1px solid var(--tako-input-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .order-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      color: var(--tako-text-muted);
+    }
+    .order-summary-row.total-row {
+      border-top: 1px dashed #2a3b50;
+      padding-top: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .total-highlight {
+      color: var(--tako-pink);
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    /* Terms note */
+    .tako-terms-note {
+      font-size: 0.78rem;
+      color: var(--tako-text-dim);
+      line-height: 1.5;
+    }
+
+    /* Submit Button */
+    .tako-submit-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 1.02rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tako-submit-btn:hover:not(:disabled) {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    .tako-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Checkout Card */
+    .tako-checkout-card {
+      background: #16202e;
+      border: 1.5px solid var(--tako-blue);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .tako-checkout-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tako-status-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+    }
+    .tako-status-badge.success {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+    }
+    .tako-pay-link {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tako-pay-link:hover { background: #1d4ed8; }
+    .tako-check-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #ffffff;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tako-check-btn:hover { background: #334155; }
+
+    /* Tab Content Views */
+    .tab-view-content {
+      display: block;
+    }
+    .tab-view-content.hidden {
+      display: none;
+    }
+
+    /* Supporter Item */
+    .supporter-item-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: #16202e;
+      border: 1px solid #202d3d;
+      border-radius: 10px;
+    }
+    .supporter-item-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    /* Footer */
+    .tako-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid #1a2433;
+      text-align: center;
+    }
+    .tako-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      font-size: 0.82rem;
+    }
+    .tako-footer-links a {
+      color: var(--tako-text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .tako-footer-links a:hover {
+      color: #ffffff;
+    }
+    .tako-copyright {
+      font-size: 0.75rem;
+      color: #475569;
+      line-height: 1.6;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Top Navigation Header -->
-  <header class="site-nav">
-    <div class="container nav-wrap">
-      <a href="/" class="brand-link">
-        <img src="/assets/mascot.svg" alt="Streamcal Logo" class="brand-logo">
-        <span class="streamcal-brand">Streamcal</span>
+  <!-- Top Announcement Bar -->
+  <div class="top-announce-bar" id="topAnnounceBar">
+    <span>💖 100% donasi dialokasikan untuk pemeliharaan server berkecepatan tinggi &amp; penyimpanan file permanen Streamcal.</span>
+    <button type="button" class="top-announce-close" id="closeAnnounceBtn" aria-label="Tutup pengumuman">&times;</button>
+  </div>
+
+  <div class="tako-container">
+
+    <!-- Navbar Header -->
+    <header class="tako-nav">
+      <a href="/" class="tako-logo">
+        <img src="/assets/mascot.svg" alt="Streamcal Logo">
+        <span>Streamcal</span>
       </a>
-      <ul class="nav-links">
-        <li><a href="/" class="nav-link">Home</a></li>
-        <li><a href="/#faq" class="nav-link">FAQ</a></li>
-        <li>
-          <button id="themeToggle" class="theme-btn" aria-label="Toggle Dark / Light theme">☀️ Light</button>
-        </li>
-      </ul>
-    </div>
-  </header>
+      <a href="/" class="tako-nav-btn">Beranda</a>
+    </header>
 
-  <!-- Main Support Content -->
-  <main class="support-page-wrap">
-
-    <!-- Breadcrumb back link -->
-    <div>
-      <a href="/" class="back-home-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        <span>Kembali ke Beranda Streamcal</span>
-      </a>
-    </div>
-
-    <!-- Hero Title -->
-    <div class="support-hero-box">
-      <div class="support-hero-icon">💖</div>
-      <h1 class="support-page-title">Support <span class="streamcal-brand">Streamcal</span></h1>
-      <p class="support-page-subtitle">Bantu operasional server, bandwidth penyimpanan file &amp; gambar permanen, serta pengembangan fitur baru Streamcal. Setiap kontribusi sangat berarti bagi kelangsungan layanan gratis ini untuk semua orang!</p>
-      
-      <div class="support-tags" style="justify-content: center; margin-top: 4px;">
-        <span class="support-tag-instant">
-          💖 100% Dukungan Server &amp; Komunitas
-        </span>
-        <span class="support-tag-qris">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          QRIS, GoPay, DANA &amp; PayPal
-        </span>
-        <span class="support-tag-instant">
-          ⚡ Proses Instan &amp; Otomatis
-        </span>
+    <!-- Creator Profile Card -->
+    <section class="creator-card">
+      <div class="creator-header">
+        <div class="creator-avatar-wrap">
+          <div class="creator-avatar">ST</div>
+          <div>
+            <h1 class="creator-name">Streamcal</h1>
+            <div class="creator-handle">@streamcal &bull; Free &amp; Permanent High-Speed File Hosting</div>
+          </div>
+        </div>
+        <a href="/" class="creator-action-btn">
+          <span>Ikuti</span>
+        </a>
       </div>
-    </div>
 
-    <!-- Support Grid Container -->
-    <div class="support-grid">
+      <!-- Navigation Tabs -->
+      <nav class="creator-tabs" aria-label="Creator tabs">
+        <button type="button" class="creator-tab active" data-tab="gift" id="tabGiftBtn">Hadiah</button>
+        <button type="button" class="creator-tab" data-tab="supporters" id="tabSupportersBtn">Supporter</button>
+        <button type="button" class="creator-tab" data-tab="about" id="tabAboutBtn">Tentang Layanan</button>
+      </nav>
+    </section>
 
-      <!-- Left Column: Support Donation Form -->
-      <div class="support-card-box">
+    <!-- TAB 1: Hadiah / Support Form View -->
+    <main class="tab-view-content" id="viewTabGift">
+      <div class="form-card">
+        <div class="form-card-title">
+          <span>Hadiah</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+        </div>
+
         <form id="supportForm" onsubmit="return false;">
-          
-          <!-- Country / Region Selection -->
-          <div class="support-input-wrap">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label class="support-section-label">
-                <span>🌍</span> Asal Negara / Region Pembayaran
-              </label>
-              <span style="font-size:0.75rem; color:var(--text-dim);">Pilih untuk panduan metode</span>
-            </div>
-            <div class="support-countries-grid" id="supportCountriesGrid">
-              <button type="button" class="support-country-btn active" data-country="id" data-currency="IDR">
-                <span class="country-flag">🇮🇩</span>
-                <span class="country-name">Indonesia</span>
-                <span class="country-badge">IDR / Rp</span>
-              </button>
-              <button type="button" class="support-country-btn" data-country="my" data-currency="MYR">
-                <span class="country-flag">🇲🇾</span>
-                <span class="country-name">Malaysia</span>
-                <span class="country-badge">MYR / RM</span>
-              </button>
-              <button type="button" class="support-country-btn" data-country="sg" data-currency="SGD">
-                <span class="country-flag">🇸🇬</span>
-                <span class="country-name">Singapore</span>
-                <span class="country-badge">SGD / S$</span>
-              </button>
-              <button type="button" class="support-country-btn" data-country="us" data-currency="USD">
-                <span class="country-flag">🇺🇸</span>
-                <span class="country-name">United States</span>
-                <span class="country-badge">USD / $</span>
-              </button>
-            </div>
-            <div id="countryHelpBanner" class="country-help-banner">
-              <span style="font-size:1.3rem; line-height:1;" id="countryHelpIcon">🇮🇩</span>
-              <div id="countryHelpText">
-                <strong>Indonesia (IDR):</strong> Mendukung pembayaran instan via QRIS (Semua Bank &amp; e-Wallet), GoPay, DANA, dan PayPal/Kartu Kredit.
+
+          <!-- Field 1: Dari / Nama Pengirim -->
+          <div class="tako-field">
+            <label class="tako-label" for="supportNameInput">Dari <span class="req">*</span></label>
+            <input type="text" id="supportNameInput" class="tako-input" placeholder="Siluman Taplak Meja / Anonim" maxlength="50" required>
+          </div>
+
+          <!-- Field 2: Email Pengirim -->
+          <div class="tako-field" style="margin-top:4px;">
+            <label class="tako-label" for="supportEmailInput">Email <span class="req">*</span></label>
+            <input type="email" id="supportEmailInput" class="tako-input" placeholder="simanj4@email.com" required>
+            <label class="tako-checkbox-row" style="margin-top:2px;">
+              <input type="checkbox" id="hideEmailCheckbox" checked>
+              <span>Sembunyikan Email Saya Dari Publik</span>
+            </label>
+          </div>
+
+          <!-- Field 3: Pesan -->
+          <div class="tako-field" style="margin-top:4px;">
+            <label class="tako-label" for="supportMessageInput">Pesan</label>
+            <div class="tako-textarea-wrap">
+              <textarea id="supportMessageInput" class="tako-textarea" placeholder="Halo kreator favoritku, terima kasih atas layanan Streamcal~~" maxlength="200"></textarea>
+              <div class="emoji-btn-wrap">
+                <button type="button" class="emoji-pill-btn" id="quickEmojiBtn">
+                  <span>Emoji</span> <span>😊</span>
+                </button>
               </div>
             </div>
           </div>
 
-          <!-- Nominal Donasi (Quick Preset + Bebas Custom Input Always Visible) -->
-          <div class="support-input-wrap" style="margin-top:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label class="support-section-label">Pilih Nominal Donasi</label>
-              <span style="font-size:0.76rem; color:var(--accent-primary); font-weight:700;">✨ Bebas Custom Berapa Saja</span>
-            </div>
+          <!-- Field 4: Jumlah Hadiah -->
+          <div class="tako-field" style="margin-top:4px;">
+            <label class="tako-label">Jumlah Hadiah <span class="req">*</span></label>
             
-            <!-- Quick Preset Buttons -->
-            <div class="support-presets-grid" id="supportPresetsGrid">
-              <button type="button" class="support-preset-btn active" data-amount="10000">
-                <span>Rp 10.000</span>
-                <span class="support-preset-label">Kopi Santai ☕</span>
-              </button>
-              <button type="button" class="support-preset-btn" data-amount="25000">
-                <span>Rp 25.000</span>
-                <span class="support-preset-label">Makan Siang 🍱</span>
-              </button>
-              <button type="button" class="support-preset-btn" data-amount="50000">
-                <span>Rp 50.000</span>
-                <span class="support-preset-label">Server Bulanan ⚡</span>
-              </button>
-              <button type="button" class="support-preset-btn" data-amount="100000">
-                <span>Rp 100.000</span>
-                <span class="support-preset-label">Super Supporter 🚀</span>
-              </button>
-              <button type="button" class="support-preset-btn" data-amount="200000">
-                <span>Rp 200.000</span>
-                <span class="support-preset-label">Sponsor Utama 👑</span>
-              </button>
+            <!-- Currency Dropdown Integrated With Number Input -->
+            <div class="currency-input-group">
+              <select id="currencySelector" class="currency-select" aria-label="Pilih mata uang">
+                <option value="IDR" selected>IDR ▾</option>
+                <option value="MYR">MYR ▾</option>
+                <option value="SGD">SGD ▾</option>
+                <option value="USD">USD ▾</option>
+              </select>
+              <input type="text" id="supportAmountInput" class="amount-number-input" placeholder="10.000" value="10.000">
             </div>
 
-            <!-- Custom Amount Input (Always Visible and Easy to Edit) -->
-            <div style="margin-top:12px;">
-              <label class="support-section-label" for="supportAmountInput" style="margin-bottom:6px;">
-                <span>✍️</span> Nominal Donasi (Ketik Bebas Custom)
-              </label>
-              <div class="support-input-row">
-                <span class="support-currency-prefix">Rp</span>
-                <input type="number" id="supportAmountInput" class="support-text-input" placeholder="Ketik nominal berapa saja (min. Rp 1.000)" min="1000" max="50000000" value="10000">
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-top:8px;">
-                <span style="font-size:0.75rem; color:var(--text-dim);">Min. Rp 1.000 &bull; Maks. Rp 50.000.000</span>
-                <div id="currencyApproxBadge" class="currency-approx-badge">
-                  <span>💱</span>
-                  <span id="currencyApproxText">≈ Rp 10.000 IDR</span>
-                </div>
-              </div>
+            <!-- Minimum Alert Note -->
+            <div class="alert-min-note" id="alertMinNote">
+              <span>⚡</span>
+              <span id="alertMinText">Jumlah Minimum Muncul di Alert: IDR 1.000</span>
+            </div>
+
+            <!-- Preset Chips -->
+            <div class="preset-chips-wrap" id="presetChipsWrap" style="margin-top:4px;">
+              <!-- Dynamic Preset Chips Rendered by JS -->
             </div>
           </div>
 
-          <!-- Supporter Name & Email -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
-            <div class="support-input-wrap">
-              <label class="support-section-label" for="supportNameInput">Nama / Samaran *</label>
-              <div class="support-input-row">
-                <input type="text" id="supportNameInput" class="support-text-input" placeholder="Contoh: Alex / Anonim" maxlength="50" required>
+          <!-- Section 5: Power Up -->
+          <div class="powerup-box" style="margin-top:8px;">
+            <div class="powerup-header">
+              <span>⚡ Power Up</span>
+              <span class="powerup-badge">💎 0 XP</span>
+            </div>
+            <div class="powerup-grid">
+              <div class="powerup-item">
+                <span>🪙 Floating Coins</span>
+                <span class="lock">🔒</span>
+              </div>
+              <div class="powerup-item">
+                <span>🎙️ Vocal Effect</span>
+                <span class="lock">🔒</span>
+              </div>
+              <div class="powerup-item">
+                <span>🔥 Fire Spark</span>
+                <span class="lock">🔒</span>
+              </div>
+              <div class="powerup-item">
+                <span>✨ Sparkle Glow</span>
+                <span class="lock">🔒</span>
+              </div>
+              <div class="powerup-item">
+                <span>🕵️ Pesan Rahasia</span>
+                <span class="lock">🔒</span>
+              </div>
+              <div class="powerup-item">
+                <span>🚀 Prioritas Server</span>
+                <span class="lock">🔒</span>
               </div>
             </div>
-            <div class="support-input-wrap">
-              <label class="support-section-label" for="supportEmailInput">Email Aktif *</label>
-              <div class="support-input-row">
-                <input type="email" id="supportEmailInput" class="support-text-input" placeholder="Untuk bukti pembayaran" required>
-              </div>
+            <div style="font-size:0.75rem; color:var(--tako-text-dim);">
+              Dukungan Anda otomatis mengaktifkan badge supporter dan prioritas server Streamcal.
             </div>
           </div>
 
-          <!-- Payment Method Selection -->
-          <div class="support-input-wrap" style="margin-top:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label class="support-section-label">Metode Pembayaran</label>
-              <span id="methodRecommendationTag" style="font-size:0.75rem; color:var(--accent-primary); font-weight:700;"></span>
+          <!-- Section 6: Pembayaran -->
+          <div class="payment-section">
+            <h2 class="payment-title">Pembayaran</h2>
+
+            <!-- Dropdown Negara Pembayaran -->
+            <div class="country-select-wrap">
+              <label class="tako-label" for="countryPaymentSelect">Pilih Negara Pembayaran</label>
+              <select id="countryPaymentSelect" class="country-select">
+                <option value="id" selected>🇮🇩 Indonesia</option>
+                <option value="my">🇲🇾 Malaysia</option>
+                <option value="sg">🇸🇬 Singapore</option>
+                <option value="us">🇺🇸 United States</option>
+              </select>
             </div>
-            <div class="support-methods-grid" id="supportMethodsGrid">
-              <div class="support-method-card active" data-method="qris" id="methodCardQris">
-                <div class="support-method-icon">📱</div>
-                <div class="support-method-info">
-                  <span class="support-method-title">
+
+            <!-- Pilihan Metode Pembayaran -->
+            <div class="tako-field" style="margin-top:4px;">
+              <label class="tako-label">Pilih Metode Pembayaran <span class="req">*</span></label>
+              <div class="tako-methods-grid" id="takoMethodsGrid">
+                
+                <!-- QRIS Card -->
+                <div class="tako-method-card active" data-method="qris" id="methodCardQris">
+                  <span class="tako-method-text">
+                    <svg width="60" height="24" viewBox="0 0 100 36" fill="currentColor">
+                      <rect x="2" y="2" width="28" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="4"/>
+                      <rect x="9" y="9" width="14" height="14" fill="currentColor"/>
+                      <path d="M42 6h8v24h-8zm16 0h8v24h-8zm16 0h16v8h-8v4h8v12h-8v-8h-8z" fill="currentColor"/>
+                    </svg>
                     QRIS
-                    <span class="method-tag-badge" id="qrisCrossBadge">ASEAN Cross-Border</span>
+                    <span class="tako-method-sub-badge" id="qrisBadgeText">Instan</span>
                   </span>
-                  <span class="support-method-sub" id="qrisSubText">BCA, Mandiri, BRI, DuitNow (MY) 🇲🇾, PayNow/NETS (SG) 🇸🇬</span>
                 </div>
-              </div>
-              <div class="support-method-card" data-method="gopay" id="methodCardGopay">
-                <div class="support-method-icon">🟢</div>
-                <div class="support-method-info">
-                  <span class="support-method-title">GoPay</span>
-                  <span class="support-method-sub">Aplikasi Gojek / GoPay Indonesia 🇮🇩</span>
-                </div>
-              </div>
-              <div class="support-method-card" data-method="dana" id="methodCardDana">
-                <div class="support-method-icon">🔵</div>
-                <div class="support-method-info">
-                  <span class="support-method-title">DANA</span>
-                  <span class="support-method-sub">Dompet Digital DANA Indonesia 🇮🇩</span>
-                </div>
-              </div>
-              <div class="support-method-card" data-method="paypal" id="methodCardPaypal">
-                <div class="support-method-icon">💳</div>
-                <div class="support-method-info">
-                  <span class="support-method-title">
-                    PayPal / Card
-                    <span class="method-tag-badge" style="background:rgba(99, 102, 241, 0.18); color:#818cf8;">US &amp; Global</span>
+
+                <!-- GoPay Card -->
+                <div class="tako-method-card" data-method="gopay" id="methodCardGopay">
+                  <span class="tako-method-text" style="color:#00aed6;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#00aed6">
+                      <circle cx="12" cy="12" r="10"/>
+                      <circle cx="12" cy="12" r="4" fill="#16202e"/>
+                    </svg>
+                    gopay
                   </span>
-                  <span class="support-method-sub" id="paypalSubText">United States 🇺🇸, Global &amp; Kartu Kredit/Debit (USD/MYR/SGD)</span>
                 </div>
+
+                <!-- DANA Card -->
+                <div class="tako-method-card" data-method="dana" id="methodCardDana">
+                  <span class="tako-method-text" style="color:#118eea;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#118eea">
+                      <rect x="3" y="4" width="18" height="16" rx="3"/>
+                      <path d="M7 8h10M7 12h10M7 16h6" stroke="#fff" stroke-width="2"/>
+                    </svg>
+                    DANA
+                  </span>
+                </div>
+
+                <!-- PayPal Card -->
+                <div class="tako-method-card" data-method="paypal" id="methodCardPaypal">
+                  <span class="tako-method-text" style="color:#0079c1;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0079c1">
+                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.44A.96.96 0 0 1 5.89 1.66h6.703c3.275 0 5.674 1.34 5.922 4.673.308 4.148-2.607 6.44-5.918 6.44H9.684l-1.393 7.822a.641.641 0 0 1-.633.742h-.582z"/>
+                    </svg>
+                    PayPal
+                  </span>
+                </div>
+
               </div>
             </div>
-          </div>
 
-          <!-- Cheer Message -->
-          <div class="support-input-wrap" style="margin-top:14px;">
-            <label class="support-section-label" for="supportMessageInput">Pesan Dukungan (Opsional)</label>
-            <div class="support-input-row">
-              <textarea id="supportMessageInput" class="support-text-input support-textarea" placeholder="Tuliskan ucapan semangat, kritik, atau saran untuk Streamcal..." maxlength="200"></textarea>
+            <!-- Order Summary Box -->
+            <div class="order-summary-box">
+              <div class="order-summary-row">
+                <span id="summaryItemLabel">Pembelian IDR 10.000</span>
+                <span id="summaryItemValue" style="color:#ffffff; font-weight:700;">IDR 10.000</span>
+              </div>
+              <div class="order-summary-row total-row">
+                <span>Total Pembayaran</span>
+                <span class="total-highlight" id="summaryTotalValue">IDR 10.000</span>
+              </div>
             </div>
-            <span style="font-size:0.75rem; color:var(--text-dim); text-align:right;">Maks 200 karakter</span>
-          </div>
 
-          <!-- Submit Button -->
-          <div style="margin-top:18px;">
-            <button type="submit" id="supportSubmitBtn" class="support-submit-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              <span id="supportSubmitBtnText">Kirim Dukungan (Rp 10.000)</span>
+            <!-- Terms Disclaimer -->
+            <div class="tako-terms-note">
+              Dengan bertransaksi di Streamcal, Anda memahami dan menyetujui Ketentuan Layanan yang berlaku di Streamcal.
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="supportSubmitBtn" class="tako-submit-btn">
+              <span id="supportSubmitBtnText">Lakukan Pembayaran</span>
             </button>
+
           </div>
         </form>
 
-        <!-- Checkout / Payment Result Container -->
-        <div id="supportCheckoutContainer" style="display:none; margin-top:8px;"></div>
-      </div>
+        <!-- Active Checkout Container -->
+        <div id="supportCheckoutContainer" style="display:none;"></div>
 
-      <!-- Right Column: Recent Supporters & Server Mission -->
-      <div style="display:flex; flex-direction:column; gap:16px;">
+      </div>
+    </main>
+
+    <!-- TAB 2: Leaderboard / Supporter View -->
+    <section class="tab-view-content hidden" id="viewTabSupporters">
+      <div class="form-card">
+        <div class="form-card-title">
+          <span>💖 Hall of Supporters</span>
+          <button type="button" id="refreshSupportersBtn" class="emoji-pill-btn">Refresh</button>
+        </div>
+        <p style="font-size:0.88rem; color:var(--tako-text-muted); margin:0;">Daftar teman-teman yang telah mendukung kelangsungan server gratis Streamcal.</p>
         
-        <!-- Hall of Supporters -->
-        <div class="support-card-box">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label class="support-section-label" style="margin:0;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warning-color)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              Hall of Supporters
-            </label>
-            <button type="button" id="refreshSupportersBtn" class="btn btn-secondary" style="padding:3px 8px; font-size:0.75rem;">Refresh</button>
-          </div>
-          <div id="supportersListContainer" class="support-supporters-list">
-            <div class="supporter-empty-state">
-              <span>💖</span>
-              <p>Memuat daftar pendukung...</p>
-            </div>
+        <div id="supportersListContainer" style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+          <div style="text-align:center; padding:30px 10px; color:var(--tako-text-dim);">
+            <div style="font-size:2rem; margin-bottom:8px;">💖</div>
+            <div>Memuat daftar pendukung...</div>
           </div>
         </div>
-
-        <!-- Clean Service Mission Card -->
-        <div class="support-card-box" style="padding:18px; font-size:0.86rem; color:var(--text-muted); background:var(--surface-color);">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:700; color:var(--text-main); font-size:0.95rem;">
-            <span>🛡️</span> Komitmen Layanan Streamcal
-          </div>
-          <p style="line-height:1.6;">100% donasi dialokasikan untuk pemeliharaan server berkecepatan tinggi, bandwidth global, penyimpanan file permanen, dan menjaga layanan tetap gratis untuk semua orang tanpa iklan.</p>
-        </div>
-
       </div>
-    </div>
+    </section>
 
-  </main>
+    <!-- TAB 3: Tentang Layanan View -->
+    <section class="tab-view-content hidden" id="viewTabAbout">
+      <div class="form-card">
+        <div class="form-card-title">
+          <span>🛡️ Komitmen Layanan Streamcal</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px; font-size:0.9rem; color:var(--tako-text-muted); line-height:1.6;">
+          <p>Streamcal adalah platform hosting gambar dan media gratis berkecepatan tinggi tanpa iklan. Kami berkomitmen untuk menjaga layanan tetap permanen, cepat, dan mudah diakses oleh semua orang.</p>
+          <div style="padding:14px; background:#16202e; border:1px solid #233144; border-radius:10px;">
+            <div style="font-weight:700; color:#ffffff; margin-bottom:6px;">🚀 Ke mana alokasi donasi disalurkan?</div>
+            <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px;">
+              <li>Biaya sewa server cloud compute berkecepatan tinggi</li>
+              <li>Bandwidth Content Delivery Network (CDN) global</li>
+              <li>Penyimpanan database MongoDB Atlas cloud permanen</li>
+              <li>Pengembangan fitur baru gratis untuk komunitas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2026 <strong class="streamcal-brand" style="font-size:1.05rem;">Streamcal</strong> &bull; Free &amp; Permanent High-Speed File Hosting</p>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer class="tako-footer">
+      <a href="/" class="tako-logo">
+        <img src="/assets/mascot.svg" alt="Streamcal Logo">
+        <span>Streamcal</span>
+      </a>
+      
+      <div class="tako-footer-links">
+        <a href="/">Hubungi Kami</a>
+        <a href="/#faq">Bantuan &amp; FAQ</a>
+        <a href="/api/stats">Status Layanan</a>
+        <a href="/">Syarat dan Ketentuan</a>
+        <a href="/">Kebijakan Privasi</a>
+        <a href="/api/support/config">Dokumentasi API</a>
+      </div>
 
-  <script src="/js/support.js?v=1.0"></script>
+      <div class="tako-copyright">
+        &copy; 2026 Streamcal. Hak Cipta Dilindungi Undang-Undang.<br>
+        Layanan hosting file permanen &amp; ultra-cepat tanpa batas untuk komunitas.
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="/js/support.js?v=2.0"></script>
 </body>
 </html>
