@@ -66,6 +66,102 @@
       color: var(--text-muted);
       line-height: 1.6;
     }
+
+    /* Country / Region Selection Styles */
+    .support-countries-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 640px) {
+      .support-countries-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .support-country-btn {
+      background: var(--surface-color);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      color: var(--text-main);
+      user-select: none;
+    }
+    .support-country-btn:hover {
+      border-color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.08);
+      transform: translateY(-1px);
+    }
+    .support-country-btn.active {
+      border-color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.16);
+      color: #818cf8;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+    .support-country-btn .country-flag {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+    .support-country-btn .country-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .support-country-btn .country-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.12);
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+    .country-help-banner {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 8px;
+      transition: all 0.2s ease;
+    }
+    .country-help-banner strong {
+      color: var(--text-main);
+    }
+
+    /* Currency Approx Badge */
+    .currency-approx-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #818cf8;
+      background: rgba(99, 102, 241, 0.14);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* Country Cross-border Badges on Method Cards */
+    .method-tag-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      display: inline-block;
+      margin-left: 6px;
+    }
   </style>
 </head>
 
@@ -126,9 +222,52 @@
       <div class="support-card-box">
         <form id="supportForm" onsubmit="return false;">
           
-          <!-- Preset Nominal Buttons -->
+          <!-- Country / Region Selection -->
           <div class="support-input-wrap">
-            <label class="support-section-label">Pilih Nominal Donasi</label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="support-section-label">
+                <span>🌍</span> Asal Negara / Region Pembayaran
+              </label>
+              <span style="font-size:0.75rem; color:var(--text-dim);">Pilih untuk panduan metode</span>
+            </div>
+            <div class="support-countries-grid" id="supportCountriesGrid">
+              <button type="button" class="support-country-btn active" data-country="id" data-currency="IDR">
+                <span class="country-flag">🇮🇩</span>
+                <span class="country-name">Indonesia</span>
+                <span class="country-badge">IDR / Rp</span>
+              </button>
+              <button type="button" class="support-country-btn" data-country="my" data-currency="MYR">
+                <span class="country-flag">🇲🇾</span>
+                <span class="country-name">Malaysia</span>
+                <span class="country-badge">MYR / RM</span>
+              </button>
+              <button type="button" class="support-country-btn" data-country="sg" data-currency="SGD">
+                <span class="country-flag">🇸🇬</span>
+                <span class="country-name">Singapore</span>
+                <span class="country-badge">SGD / S$</span>
+              </button>
+              <button type="button" class="support-country-btn" data-country="us" data-currency="USD">
+                <span class="country-flag">🇺🇸</span>
+                <span class="country-name">United States</span>
+                <span class="country-badge">USD / $</span>
+              </button>
+            </div>
+            <div id="countryHelpBanner" class="country-help-banner">
+              <span style="font-size:1.3rem; line-height:1;" id="countryHelpIcon">🇮🇩</span>
+              <div id="countryHelpText">
+                <strong>Indonesia (IDR):</strong> Mendukung pembayaran instan via QRIS (Semua Bank &amp; e-Wallet), GoPay, DANA, dan PayPal/Kartu Kredit.
+              </div>
+            </div>
+          </div>
+
+          <!-- Nominal Donasi (Quick Preset + Bebas Custom Input Always Visible) -->
+          <div class="support-input-wrap" style="margin-top:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="support-section-label">Pilih Nominal Donasi</label>
+              <span style="font-size:0.76rem; color:var(--accent-primary); font-weight:700;">✨ Bebas Custom Berapa Saja</span>
+            </div>
+            
+            <!-- Quick Preset Buttons -->
             <div class="support-presets-grid" id="supportPresetsGrid">
               <button type="button" class="support-preset-btn active" data-amount="10000">
                 <span>Rp 10.000</span>
@@ -150,19 +289,24 @@
                 <span>Rp 200.000</span>
                 <span class="support-preset-label">Sponsor Utama 👑</span>
               </button>
-              <button type="button" class="support-preset-btn" data-amount="custom">
-                <span>Lainnya...</span>
-                <span class="support-preset-label">Bebas Custom ✍️</span>
-              </button>
             </div>
-          </div>
 
-          <!-- Custom Amount Input -->
-          <div class="support-input-wrap" id="customAmountWrap" style="display:none; margin-top:12px;">
-            <label class="support-section-label" for="supportAmountInput">Nominal Custom (IDR)</label>
-            <div class="support-input-row">
-              <span class="support-currency-prefix">Rp</span>
-              <input type="number" id="supportAmountInput" class="support-text-input" placeholder="Minimal 1.000" min="1000" max="50000000" value="10000">
+            <!-- Custom Amount Input (Always Visible and Easy to Edit) -->
+            <div style="margin-top:12px;">
+              <label class="support-section-label" for="supportAmountInput" style="margin-bottom:6px;">
+                <span>✍️</span> Nominal Donasi (Ketik Bebas Custom)
+              </label>
+              <div class="support-input-row">
+                <span class="support-currency-prefix">Rp</span>
+                <input type="number" id="supportAmountInput" class="support-text-input" placeholder="Ketik nominal berapa saja (min. Rp 1.000)" min="1000" max="50000000" value="10000">
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-top:8px;">
+                <span style="font-size:0.75rem; color:var(--text-dim);">Min. Rp 1.000 &bull; Maks. Rp 50.000.000</span>
+                <div id="currencyApproxBadge" class="currency-approx-badge">
+                  <span>💱</span>
+                  <span id="currencyApproxText">≈ Rp 10.000 IDR</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -184,34 +328,43 @@
 
           <!-- Payment Method Selection -->
           <div class="support-input-wrap" style="margin-top:14px;">
-            <label class="support-section-label">Metode Pembayaran</label>
-            <div class="support-methods-grid">
-              <div class="support-method-card active" data-method="qris">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="support-section-label">Metode Pembayaran</label>
+              <span id="methodRecommendationTag" style="font-size:0.75rem; color:var(--accent-primary); font-weight:700;"></span>
+            </div>
+            <div class="support-methods-grid" id="supportMethodsGrid">
+              <div class="support-method-card active" data-method="qris" id="methodCardQris">
                 <div class="support-method-icon">📱</div>
                 <div class="support-method-info">
-                  <span class="support-method-title">QRIS</span>
-                  <span class="support-method-sub">BCA, Mandiri, BRI, OVO, ShopeePay</span>
+                  <span class="support-method-title">
+                    QRIS
+                    <span class="method-tag-badge" id="qrisCrossBadge">ASEAN Cross-Border</span>
+                  </span>
+                  <span class="support-method-sub" id="qrisSubText">BCA, Mandiri, BRI, DuitNow (MY) 🇲🇾, PayNow/NETS (SG) 🇸🇬</span>
                 </div>
               </div>
-              <div class="support-method-card" data-method="gopay">
+              <div class="support-method-card" data-method="gopay" id="methodCardGopay">
                 <div class="support-method-icon">🟢</div>
                 <div class="support-method-info">
                   <span class="support-method-title">GoPay</span>
-                  <span class="support-method-sub">Aplikasi Gojek / GoPay</span>
+                  <span class="support-method-sub">Aplikasi Gojek / GoPay Indonesia 🇮🇩</span>
                 </div>
               </div>
-              <div class="support-method-card" data-method="dana">
+              <div class="support-method-card" data-method="dana" id="methodCardDana">
                 <div class="support-method-icon">🔵</div>
                 <div class="support-method-info">
                   <span class="support-method-title">DANA</span>
-                  <span class="support-method-sub">Dompet Digital DANA</span>
+                  <span class="support-method-sub">Dompet Digital DANA Indonesia 🇮🇩</span>
                 </div>
               </div>
-              <div class="support-method-card" data-method="paypal">
+              <div class="support-method-card" data-method="paypal" id="methodCardPaypal">
                 <div class="support-method-icon">💳</div>
                 <div class="support-method-info">
-                  <span class="support-method-title">PayPal / Card</span>
-                  <span class="support-method-sub">Debit &amp; Kredit Internasional</span>
+                  <span class="support-method-title">
+                    PayPal / Card
+                    <span class="method-tag-badge" style="background:rgba(99, 102, 241, 0.18); color:#818cf8;">US &amp; Global</span>
+                  </span>
+                  <span class="support-method-sub" id="paypalSubText">United States 🇺🇸, Global &amp; Kartu Kredit/Debit (USD/MYR/SGD)</span>
                 </div>
               </div>
             </div>

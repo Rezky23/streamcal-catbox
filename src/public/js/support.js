@@ -1,6 +1,6 @@
 /**
  * STREAMCAL - Dedicated Support Page Client Logic
- * Handles donation presets, checkout processing, and live status verification
+ * Handles country/region guidance (ID, MY, SG, US), custom amounts, presets, and checkout verification
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,10 +23,80 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle.innerHTML = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
   }
 
+  // Country Currency Configurations & Approximate Conversion Rates
+  const COUNTRY_CONFIGS = {
+    id: {
+      name: 'Indonesia',
+      flag: '🇮🇩',
+      currency: 'IDR',
+      symbol: 'Rp',
+      rate: 1, // 1 IDR = 1 IDR
+      defaultMethod: 'qris',
+      helpText: '<strong>Indonesia (IDR):</strong> Mendukung pembayaran instan via QRIS (Semua Bank & e-Wallet), GoPay, DANA, dan PayPal/Kartu Kredit.',
+      methodsRecommendation: 'Rekomendasi: QRIS, GoPay, DANA',
+      qrisNote: 'BCA, Mandiri, BRI, GoPay, OVO, DANA, ShopeePay',
+      paypalNote: 'Kartu Debit & Kredit / Saldo PayPal'
+    },
+    my: {
+      name: 'Malaysia',
+      flag: '🇲🇾',
+      currency: 'MYR',
+      symbol: 'RM',
+      rate: 3600, // ~1 MYR = 3,600 IDR
+      defaultMethod: 'qris',
+      helpText: '<strong>Malaysia (MYR):</strong> Anda dapat scan <strong>QRIS Cross-Border via DuitNow QR</strong> (Maybank MAE, CIMB OCTO, Touch \'n Go eWallet, Public Bank, Boost) atau bayar via <strong>PayPal / Kartu Kredit</strong>.',
+      methodsRecommendation: '🇲🇾 Rekomendasi: QRIS (DuitNow) & PayPal',
+      qrisNote: 'DuitNow QR (Maybank MAE, CIMB, Touch \'n Go eWallet, Public Bank)',
+      paypalNote: 'PayPal & Kartu Kredit/Debit Malaysia (MYR)'
+    },
+    sg: {
+      name: 'Singapore',
+      flag: '🇸🇬',
+      currency: 'SGD',
+      symbol: 'S$',
+      rate: 12000, // ~1 SGD = 12,000 IDR
+      defaultMethod: 'qris',
+      helpText: '<strong>Singapore (SGD):</strong> Anda dapat scan <strong>QRIS Cross-Border via PayNow / NETS</strong> (DBS PayLah!, OCBC Digital, UOB TMRW, NETS) atau bayar via <strong>PayPal / Kartu Kredit</strong>.',
+      methodsRecommendation: '🇸🇬 Rekomendasi: QRIS (PayNow/NETS) & PayPal',
+      qrisNote: 'PayNow / NETS (DBS PayLah!, OCBC Digital, UOB TMRW)',
+      paypalNote: 'PayPal & Kartu Kredit/Debit Singapura (SGD)'
+    },
+    us: {
+      name: 'United States',
+      flag: '🇺🇸',
+      currency: 'USD',
+      symbol: '$',
+      rate: 15900, // ~1 USD = 15,900 IDR
+      defaultMethod: 'paypal',
+      helpText: '<strong>United States & Global (USD):</strong> Mendukung pembayaran via <strong>PayPal & seluruh Kartu Debit / Kredit internasional</strong> (Visa, MasterCard, American Express, Discover) dengan konversi otomatis dalam USD.',
+      methodsRecommendation: '🇺🇸 Rekomendasi: PayPal / International Card',
+      qrisNote: 'QRIS (Mendukung aplikasi perbankan mitra tertentu)',
+      paypalNote: 'United States (USD) & Semua Kartu Internasional'
+    }
+  };
+
   // State
+  let selectedCountry = 'id';
   let supportSelectedAmount = 10000;
   let supportSelectedMethod = 'qris';
   let supportPollingTimer = null;
+
+  // DOM Elements
+  const countryBtns = document.querySelectorAll('.support-country-btn');
+  const countryHelpIcon = document.getElementById('countryHelpIcon');
+  const countryHelpText = document.getElementById('countryHelpText');
+  const methodRecommendationTag = document.getElementById('methodRecommendationTag');
+  const qrisSubText = document.getElementById('qrisSubText');
+  const paypalSubText = document.getElementById('paypalSubText');
+
+  const presetBtns = document.querySelectorAll('.support-preset-btn');
+  const supportAmountInput = document.getElementById('supportAmountInput');
+  const currencyApproxText = document.getElementById('currencyApproxText');
+  const submitBtn = document.getElementById('supportSubmitBtn');
+  const submitBtnText = document.getElementById('supportSubmitBtnText');
+  const methodCards = document.querySelectorAll('.support-method-card');
+  const supportForm = document.getElementById('supportForm');
+  const refreshSupportersBtn = document.getElementById('refreshSupportersBtn');
 
   function formatRupiah(num) {
     const val = Number(num) || 0;
@@ -57,55 +127,124 @@ document.addEventListener('DOMContentLoaded', () => {
     }[tag] || tag));
   }
 
-  // Preset button handling
-  const presetBtns = document.querySelectorAll('.support-preset-btn');
-  const customAmountWrap = document.getElementById('customAmountWrap');
-  const supportAmountInput = document.getElementById('supportAmountInput');
-  const submitBtn = document.getElementById('supportSubmitBtn');
-  const submitBtnText = document.getElementById('supportSubmitBtnText');
-  const methodCards = document.querySelectorAll('.support-method-card');
-  const supportForm = document.getElementById('supportForm');
-  const refreshSupportersBtn = document.getElementById('refreshSupportersBtn');
+  // Update Country UI & Method Guidance
+  function selectCountry(countryKey) {
+    const cfg = COUNTRY_CONFIGS[countryKey] || COUNTRY_CONFIGS.id;
+    selectedCountry = countryKey;
 
+    // Toggle active country button
+    countryBtns.forEach(btn => {
+      if (btn.getAttribute('data-country') === countryKey) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // Update helper banner
+    if (countryHelpIcon) countryHelpIcon.textContent = cfg.flag;
+    if (countryHelpText) countryHelpText.innerHTML = cfg.helpText;
+    if (methodRecommendationTag) methodRecommendationTag.textContent = cfg.methodsRecommendation;
+    if (qrisSubText) qrisSubText.textContent = cfg.qrisNote;
+    if (paypalSubText) paypalSubText.textContent = cfg.paypalNote;
+
+    // Switch default method if switching to US
+    if (countryKey === 'us') {
+      selectPaymentMethod('paypal');
+    } else if (supportSelectedMethod === 'paypal' && (countryKey === 'id' || countryKey === 'my' || countryKey === 'sg')) {
+      // Keep or let user choose, but if qris was default
+      selectPaymentMethod('qris');
+    }
+
+    updateAmountAndCurrencyUI();
+  }
+
+  // Handle Country selection click
+  countryBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = btn.getAttribute('data-country');
+      if (c && COUNTRY_CONFIGS[c]) {
+        selectCountry(c);
+      }
+    });
+  });
+
+  // Update Currency Conversion & Submit Button Text
+  function updateAmountAndCurrencyUI() {
+    const amt = supportSelectedAmount || 10000;
+    const cfg = COUNTRY_CONFIGS[selectedCountry] || COUNTRY_CONFIGS.id;
+
+    if (currencyApproxText) {
+      if (selectedCountry === 'id') {
+        currencyApproxText.textContent = `≈ ${formatRupiah(amt)} IDR`;
+      } else {
+        const foreignVal = (amt / cfg.rate).toFixed(2);
+        currencyApproxText.textContent = `≈ ${cfg.symbol} ${foreignVal} ${cfg.currency} (${formatRupiah(amt)})`;
+      }
+    }
+
+    if (submitBtnText) {
+      if (selectedCountry === 'id') {
+        submitBtnText.textContent = `Kirim Dukungan (${formatRupiah(amt)})`;
+      } else {
+        const foreignVal = (amt / cfg.rate).toFixed(2);
+        submitBtnText.textContent = `Kirim Dukungan (${cfg.symbol} ${foreignVal} / ${formatRupiah(amt)})`;
+      }
+    }
+  }
+
+  // Preset button click handling
   presetBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       presetBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      const amt = btn.getAttribute('data-amount');
-      if (amt === 'custom') {
-        if (customAmountWrap) customAmountWrap.style.display = 'block';
-        if (supportAmountInput) {
-          supportAmountInput.focus();
-          supportSelectedAmount = parseInt(supportAmountInput.value, 10) || 10000;
-        }
-      } else {
-        if (customAmountWrap) customAmountWrap.style.display = 'none';
-        supportSelectedAmount = parseInt(amt, 10);
-        if (supportAmountInput) supportAmountInput.value = supportSelectedAmount;
+      const amt = parseInt(btn.getAttribute('data-amount'), 10) || 10000;
+      supportSelectedAmount = amt;
+      if (supportAmountInput) {
+        supportAmountInput.value = amt;
       }
-
-      if (submitBtnText) {
-        submitBtnText.textContent = `Kirim Dukungan (${formatRupiah(supportSelectedAmount)})`;
-      }
+      updateAmountAndCurrencyUI();
     });
   });
 
-  // Custom amount typing
+  // Custom Amount Input typing
   supportAmountInput?.addEventListener('input', () => {
-    const val = parseInt(supportAmountInput.value, 10) || 0;
+    const rawVal = supportAmountInput.value.replace(/[^0-9]/g, '');
+    const val = parseInt(rawVal, 10) || 0;
     supportSelectedAmount = val;
-    if (submitBtnText) {
-      submitBtnText.textContent = `Kirim Dukungan (${formatRupiah(val)})`;
-    }
+
+    // Highlight matching preset if any, else unhighlight
+    let matchedPreset = false;
+    presetBtns.forEach(btn => {
+      const btnAmt = parseInt(btn.getAttribute('data-amount'), 10);
+      if (btnAmt === val) {
+        btn.classList.add('active');
+        matchedPreset = true;
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    updateAmountAndCurrencyUI();
   });
 
-  // Payment method selection
+  // Payment Method Selection
+  function selectPaymentMethod(methodName) {
+    supportSelectedMethod = methodName;
+    methodCards.forEach(card => {
+      if (card.getAttribute('data-method') === methodName) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    });
+  }
+
   methodCards.forEach(card => {
     card.addEventListener('click', () => {
-      methodCards.forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      supportSelectedMethod = card.getAttribute('data-method') || 'qris';
+      const m = card.getAttribute('data-method') || 'qris';
+      selectPaymentMethod(m);
     });
   });
 
@@ -124,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Refresh supporters
+  // Refresh supporters button
   refreshSupportersBtn?.addEventListener('click', async () => {
     refreshSupportersBtn.disabled = true;
     refreshSupportersBtn.textContent = '...';
@@ -141,6 +280,36 @@ document.addEventListener('DOMContentLoaded', () => {
       refreshSupportersBtn.textContent = 'Refresh';
     }
   });
+
+  // Render Hall of Supporters
+  function renderSupportersList(supporters) {
+    const container = document.getElementById('supportersListContainer');
+    if (!container) return;
+
+    if (!supporters || supporters.length === 0) {
+      container.innerHTML = `
+        <div class="supporter-empty-state">
+          <span>💖</span>
+          <p>Belum ada pendukung terbaru.<br>Jadilah yang pertama mendukung server Streamcal!</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = supporters.map(sup => `
+      <div class="supporter-item">
+        <div class="supporter-avatar">💖</div>
+        <div class="supporter-details">
+          <div class="supporter-top">
+            <span class="supporter-name">${escapeHtml(sup.name || 'Supporter')}</span>
+            <span class="supporter-amount">${formatRupiah(sup.amount)}</span>
+          </div>
+          ${sup.message ? `<div class="supporter-msg">"${escapeHtml(sup.message)}"</div>` : ''}
+          <div class="supporter-time">${timeAgo(sup.createdAt)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
 
   // Handle Form Submission
   supportForm?.addEventListener('submit', async (e) => {
@@ -171,7 +340,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!amount || amount < 1000) {
       alert('Nominal dukungan minimal Rp 1.000.');
-      if (customAmountWrap) customAmountWrap.style.display = 'block';
+      supportAmountInput?.focus();
+      return;
+    }
+
+    if (amount > 50000000) {
+      alert('Nominal dukungan maksimal Rp 50.000.000.');
       supportAmountInput?.focus();
       return;
     }
@@ -237,10 +411,11 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Terjadi kesalahan: ' + err.message);
     } finally {
       if (submitBtn) submitBtn.disabled = false;
-      if (submitBtnText) submitBtnText.textContent = `Kirim Dukungan (${formatRupiah(supportSelectedAmount)})`;
+      updateAmountAndCurrencyUI();
     }
   });
 
+  // Render Checkout Ticket
   function renderCheckoutCard(gift) {
     const checkoutContainer = document.getElementById('supportCheckoutContainer');
     if (!checkoutContainer) return;
@@ -248,6 +423,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (supportPollingTimer) {
       clearInterval(supportPollingTimer);
       supportPollingTimer = null;
+    }
+
+    const cfg = COUNTRY_CONFIGS[selectedCountry] || COUNTRY_CONFIGS.id;
+    let countryPaymentTip = '';
+
+    if (gift.paymentMethod === 'qris') {
+      if (selectedCountry === 'my') {
+        countryPaymentTip = `
+          <div style="margin-top:10px; padding:8px 12px; background:rgba(16, 185, 129, 0.1); border-left:3px solid #10b981; border-radius:4px; font-size:0.8rem; color:var(--text-main);">
+            🇲🇾 <strong>Petunjuk Supporter Malaysia:</strong> Buka aplikasi <strong>Maybank MAE, CIMB OCTO, Public Bank</strong> atau <strong>Touch 'n Go eWallet</strong> > Pilih <em>Scan QR</em> > Arahkan ke kode QRIS di halaman pembayaran untuk bayar instan via DuitNow Cross-Border.
+          </div>
+        `;
+      } else if (selectedCountry === 'sg') {
+        countryPaymentTip = `
+          <div style="margin-top:10px; padding:8px 12px; background:rgba(16, 185, 129, 0.1); border-left:3px solid #10b981; border-radius:4px; font-size:0.8rem; color:var(--text-main);">
+            🇸🇬 <strong>Petunjuk Supporter Singapore:</strong> Buka aplikasi <strong>DBS PayLah!, OCBC Digital, UOB TMRW</strong> atau <strong>NETS</strong> > Pilih <em>Scan QR</em> > Arahkan ke kode QRIS di halaman pembayaran untuk bayar instan via PayNow Cross-Border.
+          </div>
+        `;
+      } else {
+        countryPaymentTip = `
+          <div style="margin-top:10px; padding:8px 12px; background:rgba(99, 102, 241, 0.08); border-left:3px solid var(--accent-primary); border-radius:4px; font-size:0.8rem; color:var(--text-muted);">
+            📱 Buka aplikasi BCA, Mandiri Livin, BRImo, GoPay, OVO, ShopeePay atau DANA > Scan QRIS untuk menyelesaikan pembayaran.
+          </div>
+        `;
+      }
+    } else if (gift.paymentMethod === 'paypal') {
+      countryPaymentTip = `
+        <div style="margin-top:10px; padding:8px 12px; background:rgba(99, 102, 241, 0.08); border-left:3px solid var(--accent-primary); border-radius:4px; font-size:0.8rem; color:var(--text-muted);">
+          💳 Masuk menggunakan akun PayPal atau pilih tombol <strong>"Pay with Debit or Credit Card"</strong> di halaman PayPal untuk menyelesaikan pembayaran.
+        </div>
+      `;
     }
 
     checkoutContainer.style.display = 'block';
@@ -265,11 +471,14 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="support-checkout-meta">
           <div class="support-checkout-row">
             <span>Nominal:</span>
-            <span style="color:#34d399; font-size:1.05rem;">${formatRupiah(gift.amount)}</span>
+            <span style="color:#34d399; font-size:1.05rem; font-weight:800;">
+              ${formatRupiah(gift.amount)}
+              ${selectedCountry !== 'id' ? `<span style="font-size:0.85rem; color:var(--text-muted); font-weight:500;">(≈ ${cfg.symbol} ${(gift.amount / cfg.rate).toFixed(2)} ${cfg.currency})</span>` : ''}
+            </span>
           </div>
           <div class="support-checkout-row">
             <span>Metode:</span>
-            <span style="text-transform:uppercase;">${escapeHtml(gift.paymentMethod || 'qris')}</span>
+            <span style="text-transform:uppercase; font-weight:700;">${escapeHtml(gift.paymentMethod || 'qris')}</span>
           </div>
           <div class="support-checkout-row">
             <span>Atas Nama:</span>
@@ -282,7 +491,9 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>` : ''}
         </div>
 
-        <div class="support-checkout-actions">
+        ${countryPaymentTip}
+
+        <div class="support-checkout-actions" style="margin-top:14px;">
           ${gift.paymentUrl ? `
           <a href="${escapeHtml(gift.paymentUrl)}" target="_blank" rel="noopener noreferrer" class="support-pay-btn">
             <span>Bayar Sekarang 🚀</span>
@@ -294,8 +505,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         </div>
 
-        <div id="checkoutFeedbackMsg" style="font-size:0.82rem; color:var(--text-dim); line-height:1.4;">
-          Selesaikan pembayaran di halaman pembayaran yang terbuka. Status akan otomatis terverifikasi secara berkala.
+        <div id="checkoutFeedbackMsg" style="font-size:0.82rem; color:var(--text-dim); line-height:1.4; margin-top:8px;">
+          Selesaikan pembayaran di halaman yang terbuka. Status akan otomatis terverifikasi secara berkala.
         </div>
       </div>
     `;
@@ -326,6 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Check Gift status from server API
   async function checkGiftStatus(giftId, isSilent = false) {
     if (!giftId) return false;
     const badge = document.getElementById('checkoutStatusBadge');
@@ -352,69 +564,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (status === 'success') {
           if (badge) {
             badge.className = 'support-status-badge support-status-success';
-            badge.textContent = '🎉 Pembayaran Berhasil!';
+            badge.innerHTML = '✅ Pembayaran Berhasil!';
           }
           if (feedback) {
-            feedback.innerHTML = '<strong style="color:#34d399;">Terima kasih banyak! Donasi Anda telah berhasil dikonfirmasi. Dukungan Anda membantu Streamcal tetap gratis & online! 🌟</strong>';
+            feedback.innerHTML = '<span style="color:#34d399; font-weight:700;">Terima kasih banyak atas dukungan Anda untuk Streamcal! 💖</span>';
           }
           loadSupportData();
           return true;
-        } else if (status === 'failed') {
+        } else if (status === 'failed' || status === 'reversed') {
           if (badge) {
-            badge.className = 'support-status-badge support-status-failed';
-            badge.textContent = '✕ Pembayaran Dibatalkan / Gagal';
+            badge.className = 'support-status-badge';
+            badge.style.background = 'rgba(239, 68, 68, 0.15)';
+            badge.style.color = '#f87171';
+            badge.innerHTML = '❌ Pembayaran Dibatalkan';
           }
           return true;
         } else {
+          if (badge) {
+            badge.className = 'support-status-badge support-status-pending';
+            badge.innerHTML = '⏳ Menunggu Pembayaran';
+          }
           if (!isSilent && feedback) {
-            feedback.textContent = `Status transaksi saat ini: ${status || 'Menunggu konfirmasi pembayaran'}.`;
+            feedback.textContent = 'Pembayaran belum terdeteksi. Silakan selesaikan pembayaran lalu klik tombol cek status lagi.';
           }
         }
       }
     } catch (err) {
-      if (!isSilent && feedback) {
-        feedback.textContent = 'Gagal memeriksa status: ' + err.message;
+      if (!isSilent && checkBtn) {
+        checkBtn.disabled = false;
+        checkBtn.innerHTML = '<span>🔄 Cek Status</span>';
       }
+      console.warn('Status check error:', err);
     }
+
     return false;
   }
 
-  function renderSupportersList(supporters) {
-    const container = document.getElementById('supportersListContainer');
-    if (!container) return;
-
-    if (!supporters || supporters.length === 0) {
-      container.innerHTML = `
-        <div class="supporter-empty-state">
-          <span style="font-size:1.6rem;">💖</span>
-          <p>Belum ada pendukung terdaftar.</p>
-          <span style="font-size:0.78rem; color:var(--text-dim);">Jadilah pendukung pertama hari ini!</span>
-        </div>
-      `;
-      return;
-    }
-
-    let html = '';
-    supporters.forEach(s => {
-      const initial = (s.name || 'A').charAt(0).toUpperCase();
-      const amountStr = formatRupiah(s.amount);
-      const timeStr = s.createdAt ? timeAgo(s.createdAt) : '';
-
-      html += `
-        <div class="supporter-item">
-          <div class="supporter-top-row">
-            <div class="supporter-name-badge">
-              <div class="supporter-avatar">${escapeHtml(initial)}</div>
-              <span>${escapeHtml(s.name)}</span>
-            </div>
-            <span class="supporter-amount-pill">${escapeHtml(amountStr)}</span>
-          </div>
-          ${s.message ? `<div class="supporter-msg">"${escapeHtml(s.message)}"</div>` : ''}
-          <div class="supporter-time">${escapeHtml(timeStr)}</div>
-        </div>
-      `;
-    });
-
-    container.innerHTML = html;
-  }
+  // Initial UI sync
+  updateAmountAndCurrencyUI();
 });

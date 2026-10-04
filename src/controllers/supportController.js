@@ -16,13 +16,19 @@ class SupportController {
           isConfigured,
           username,
           profileUrl: `https://tako.id/${encodeURIComponent(username)}`,
-          supportedMethods: [
-            { id: 'qris', name: 'QRIS', desc: 'Scan via BCA, Mandiri, BRI, GoPay, OVO, ShopeePay, DANA', icon: 'qris' },
-            { id: 'gopay', name: 'GoPay', desc: 'Bayar instan via GoPay', icon: 'gopay' },
-            { id: 'dana', name: 'DANA', desc: 'Bayar instan via DANA Wallet', icon: 'dana' },
-            { id: 'paypal', name: 'PayPal', desc: 'International Credit/Debit Card & PayPal', icon: 'paypal' }
+          supportedCountries: [
+            { id: 'id', name: 'Indonesia', flag: '🇮🇩', currency: 'IDR', prefix: 'Rp' },
+            { id: 'my', name: 'Malaysia', flag: '🇲🇾', currency: 'MYR', prefix: 'RM' },
+            { id: 'sg', name: 'Singapore', flag: '🇸🇬', currency: 'SGD', prefix: 'S$' },
+            { id: 'us', name: 'United States', flag: '🇺🇸', currency: 'USD', prefix: '$' }
           ],
-          presetAmounts: [5000, 10000, 25000, 50000, 100000],
+          supportedMethods: [
+            { id: 'qris', name: 'QRIS', desc: 'Scan via BCA, Mandiri, BRI, DANA, GoPay, OVO & Cross-Border ASEAN (DuitNow MY 🇲🇾, PayNow/NETS SG 🇸🇬)', icon: 'qris' },
+            { id: 'gopay', name: 'GoPay', desc: 'Bayar instan via GoPay Indonesia 🇮🇩', icon: 'gopay' },
+            { id: 'dana', name: 'DANA', desc: 'Bayar instan via DANA Wallet Indonesia 🇮🇩', icon: 'dana' },
+            { id: 'paypal', name: 'PayPal / Cards', desc: 'United States 🇺🇸 & International Credit/Debit Card (USD, MYR, SGD)', icon: 'paypal' }
+          ],
+          presetAmounts: [10000, 25000, 50000, 100000, 200000],
           recentSupporters
         }
       });
