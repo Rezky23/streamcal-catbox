@@ -130,7 +130,38 @@ curl -X POST http://localhost:3000/api/upload-url \
   -d '{"url": "https://example.com/sample.jpg"}'
 ```
 
-```
+### 3. Support Me via Tako.id
+- **Lihat Konfigurasi**: `GET /api/support/config`
+- **Kirim Dukungan / Gift**:
+  ```bash
+  curl -X POST http://localhost:3000/api/support/create \
+    -H "Content-Type: application/json" \
+    -d '{
+      "name": "Budi",
+      "email": "budi@example.com",
+      "amount": 25000,
+      "paymentMethod": "qris",
+      "message": "Terima kasih Streamcal!"
+    }'
+  ```
+- **Cek Status Pembayaran**: `GET /api/support/status/:giftId`
+- **Daftar Pendukung Terbaru**: `GET /api/support/recent`
+- **Webhook Notifikasi Tako**: `POST /api/support/webhook`
+
+---
+
+## 💖 Konfigurasi Dukungan Tako.id (https://tako.id/api-docs)
+
+Streamcal mendukung sistem donasi & apresiasi langsung menggunakan **Tako.id API**:
+1. Buat akun dan ambil Personal API Key di [Tako API Keys](https://tako.id/me/api-keys).
+2. Tambahkan pengaturan ke file `.env`:
+   ```env
+   TAKO_API_KEY=personal_api_key_anda
+   TAKO_USERNAME=username_tako_anda
+   TAKO_WEBHOOK_SECRET=secret_webhook_opsional
+   ```
+3. Metode pembayaran yang didukung otomatis: **QRIS**, **GoPay**, **DANA**, dan **PayPal / Kartu Kredit**.
+4. Website akan menyediakan formulir donasi elegan lengkap dengan preset nominal, input custom, verifikasi status transaksi realtime, serta *Hall of Supporters* otomatis.
 
 ---
 
@@ -139,4 +170,5 @@ curl -X POST http://localhost:3000/api/upload-url \
 - **Bebas Watermark**: UI publik bersih tanpa logo/watermark pihak ketiga atau sistem database internal.
 - **Direct Link**: Semua link file dapat langsung diakses publik dan di-embed ke forum, website, atau Discord.
 - **Zero Credentials Exposure**: File konfigurasi `.env` dan direktori upload otomatis terproteksi oleh `.gitignore`.
+
 
