@@ -20,20 +20,33 @@ async function serveDirectFile(req, res, next) {
       return next(); // Pass to next route or 404 handler
     }
 
-    const contentType = file.mimeType || 'application/octet-stream';
+    let contentType = file.mimeType || 'application/octet-stream';
+    const lowerExt = (file.extension || '').toLowerCase();
     const fileData = file.data;
     const totalSize = fileData.length;
+
+    // Security Hardening: Never allow HTML/JS/XML to execute in browser context
+    const DANGEROUS_MIMES = [
+      'text/html', 'application/xhtml+xml', 'text/xml', 'application/xml',
+      'text/javascript', 'application/javascript', 'application/x-javascript',
+      'text/ecmascript'
+    ];
+
+    if (DANGEROUS_MIMES.some(m => contentType.toLowerCase().startsWith(m)) ||
+        ['html', 'htm', 'xhtml', 'js', 'mjs', 'cjs', 'php', 'xml'].includes(lowerExt)) {
+      contentType = 'application/octet-stream';
+      res.setHeader('Content-Disposition', `attachment; filename="${file.storedName || filename}"`);
+      res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+    } else if (contentType === 'image/svg+xml' || lowerExt === 'svg') {
+      // Neutralize SVG script execution (Stored XSS)
+      res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+    }
 
     // Set aggressive caching headers for high performance CDN delivery
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     res.setHeader('Content-Type', contentType);
     res.setHeader('Accept-Ranges', 'bytes');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-
-    // Security Hardening: Neutralize SVG script execution (Stored XSS)
-    if (contentType === 'image/svg+xml' || (file.extension && file.extension.toLowerCase() === 'svg')) {
-      res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
-    }
 
     // Support HTTP Range requests (crucial for audio seeking and streaming on Discord/Web)
     const range = req.headers.range;

@@ -405,6 +405,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - popupWidth) / 2));
     const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - popupHeight) / 2));
 
+    if (!url || typeof url !== 'string' || !/^https?:\/\//i.test(url.trim())) {
+      console.warn('Blocked opening untrusted URL:', url);
+      return null;
+    }
+
     try {
       if (paymentPopupWindow && !paymentPopupWindow.closed) {
         paymentPopupWindow.location.href = url;
@@ -440,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${escapeHtml(data.message || 'Layanan donasi sedang dalam penyiapan sistem.')}
         </p>
         <div style="display:flex; gap:10px;">
-          <a href="${escapeHtml(data.fallbackUrl || '#')}" target="_blank" rel="noopener noreferrer" class="tako-pay-link">
+          <a href="${sanitizeUrl(data.fallbackUrl)}" target="_blank" rel="noopener noreferrer" class="tako-pay-link">
             <span>Buka Profil Kreator Streamcal</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           </a>
@@ -727,14 +732,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>'"]/g, tag => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      "'": '&#39;',
-      '"': '&quot;'
-    }[tag] || tag));
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/`/g, '&#96;');
+  }
+
+  function sanitizeUrl(url) {
+    if (!url || typeof url !== 'string') return '#';
+    const trimmed = url.trim();
+    if (/^(https?:\/\/|\/)/i.test(trimmed) && !/^(javascript|data|vbscript):/i.test(trimmed)) {
+      return escapeHtml(trimmed);
+    }
+    return '#';
   }
 
   // Initialize UI

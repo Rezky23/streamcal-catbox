@@ -5,7 +5,7 @@ const config = require('../config/env');
 const fileService = require('../services/fileService');
 const { calculateBufferHash } = require('../utils/hash');
 const { generateShortId } = require('../utils/idGenerator');
-const { getCleanExtension, isValidHttpUrl, isSafePublicUrl } = require('../utils/helpers');
+const { getCleanExtension, isValidHttpUrl, isSafePublicUrl, isAllowedExtension, sanitizeSvgBuffer } = require('../utils/helpers');
 
 /**
  * Handle multipart file uploads (single or batch) in memory
@@ -24,11 +24,16 @@ async function uploadFiles(req, res) {
     const results = [];
 
     for (const file of rawFiles) {
-      const buffer = file.buffer;
-      const hash = calculateBufferHash(buffer);
-
-      const shortId = file.streamcalShortId || generateShortId(6);
+      let buffer = file.buffer;
       const ext = file.streamcalExt || getCleanExtension(file.originalname, file.mimetype);
+
+      // Security: Strip dangerous script and event handler tags from SVGs
+      if (ext === 'svg' || (file.mimetype && file.mimetype.toLowerCase() === 'image/svg+xml')) {
+        buffer = sanitizeSvgBuffer(buffer);
+      }
+
+      const hash = calculateBufferHash(buffer);
+      const shortId = file.streamcalShortId || generateShortId(6);
       const storedName = file.streamcalFilename || (ext ? `${shortId}.${ext}` : shortId);
       const directUrl = `${config.baseUrl}/${storedName}`;
 
@@ -133,7 +138,7 @@ async function uploadFromUrl(req, res) {
       }
     });
 
-    const buffer = Buffer.from(response.data);
+    let buffer = Buffer.from(response.data);
 
     if (buffer.length > maxSizeBytes) {
       return res.status(400).json({
@@ -146,18 +151,32 @@ async function uploadFromUrl(req, res) {
     const parsedUrl = new URL(url);
     const urlFilename = path.basename(parsedUrl.pathname) || 'file';
     let ext = getCleanExtension(urlFilename, rawContentType);
+
+    // Security check: Extension must be in strict media allowlist
+    if (!isAllowedExtension(ext)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Hanya file gambar (image) dan audio yang diperbolehkan!'
+      });
+    }
+
     let finalMime = rawContentType || (ext ? mime.lookup(ext) : '') || 'application/octet-stream';
     if (finalMime === 'application/octet-stream' && ext) {
       const guessed = mime.lookup(ext);
       if (guessed) finalMime = guessed;
     }
 
-    // Final security check: ensure file is image or audio
+    // Final security check: ensure file MIME is image or audio
     if (!finalMime.startsWith('image/') && !finalMime.startsWith('audio/')) {
       return res.status(400).json({
         success: false,
         error: 'Hanya file gambar (image) dan audio yang diperbolehkan!'
       });
+    }
+
+    // Security: Sanitize SVG files
+    if (ext === 'svg' || finalMime === 'image/svg+xml') {
+      buffer = sanitizeSvgBuffer(buffer);
     }
 
     const storedName = ext ? `${shortId}.${ext}` : shortId;

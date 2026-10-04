@@ -57,6 +57,11 @@ class TakoService {
       const resData = response.data;
       const result = resData.result || resData.data || resData;
 
+      const rawPaymentUrl = result.paymentUrl || (result.transaction ? result.transaction.paymentUrl : '');
+      const safePaymentUrl = (rawPaymentUrl && typeof rawPaymentUrl === 'string' && /^https:\/\//i.test(rawPaymentUrl))
+        ? rawPaymentUrl
+        : '';
+
       const record = {
         giftId: result.giftId || null,
         transactionId: result.transactionId || null,
@@ -65,7 +70,7 @@ class TakoService {
         email: payload.email,
         amount: payload.amount,
         paymentMethod: payload.paymentMethod,
-        paymentUrl: result.paymentUrl || (result.transaction ? result.transaction.paymentUrl : ''),
+        paymentUrl: safePaymentUrl,
         message: payload.message,
         status: 'pending',
         createdAt: new Date()
@@ -101,7 +106,12 @@ class TakoService {
       throw new Error('Tako API is not configured yet');
     }
 
-    const endpoint = `${this.baseUrl}/api/v1/gift/${encodeURIComponent(giftId)}`;
+    const cleanGiftId = String(giftId || '').trim();
+    if (!/^[a-zA-Z0-9_\-\.]{1,100}$/.test(cleanGiftId)) {
+      throw new Error('Invalid giftId format');
+    }
+
+    const endpoint = `${this.baseUrl}/api/v1/gift/${encodeURIComponent(cleanGiftId)}`;
 
     try {
       const response = await axios.get(endpoint, {
@@ -118,7 +128,7 @@ class TakoService {
 
       // Update in database if status changed
       if (result && result.status) {
-        await this.updateStatus(giftId, result.status);
+        await this.updateStatus(cleanGiftId, result.status);
       }
 
       return result;
@@ -138,7 +148,12 @@ class TakoService {
       throw new Error('Tako API is not configured yet');
     }
 
-    const endpoint = `${this.baseUrl}/api/v1/transactions/${encodeURIComponent(transactionId)}`;
+    const cleanTxId = String(transactionId || '').trim();
+    if (!/^[a-zA-Z0-9_\-\.]{1,100}$/.test(cleanTxId)) {
+      throw new Error('Invalid transactionId format');
+    }
+
+    const endpoint = `${this.baseUrl}/api/v1/transactions/${encodeURIComponent(cleanTxId)}`;
 
     try {
       const response = await axios.get(endpoint, {
@@ -196,11 +211,18 @@ class TakoService {
    * Update status of support entry
    */
   async updateStatus(giftOrTransactionId, status) {
+    if (!giftOrTransactionId || typeof giftOrTransactionId !== 'string') return;
+    const cleanId = giftOrTransactionId.trim();
+    if (!/^[a-zA-Z0-9_\-\.]{1,100}$/.test(cleanId)) return;
+    const safeStatus = ['pending', 'success', 'failed', 'cancelled', 'expired', 'reversed'].includes(status)
+      ? status
+      : 'pending';
+
     if (db.isConnected()) {
       try {
         await Support.updateOne(
-          { $or: [{ giftId: giftOrTransactionId }, { transactionId: giftOrTransactionId }] },
-          { $set: { status } }
+          { $or: [{ giftId: cleanId }, { transactionId: cleanId }] },
+          { $set: { status: safeStatus } }
         ).exec();
       } catch (err) {
         console.error('Error updating status in MongoDB:', err.message);
@@ -209,10 +231,10 @@ class TakoService {
 
     // Memory fallback update
     const memItem = memorySupports.find(
-      s => s.giftId === giftOrTransactionId || s.transactionId === giftOrTransactionId
+      s => s.giftId === cleanId || s.transactionId === cleanId
     );
     if (memItem) {
-      memItem.status = status;
+      memItem.status = safeStatus;
     }
   }
 

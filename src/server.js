@@ -32,6 +32,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   crossOriginEmbedderPolicy: false,
   xContentTypeOptions: true,
+  xssFilter: true,
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -42,6 +43,9 @@ app.use(helmet({
       mediaSrc: ["'self'", "data:", "blob:", "https:", "http:"],
       connectSrc: ["'self'", "https:", "http:"],
       objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'self'"],
       upgradeInsecureRequests: config.nodeEnv === 'production' ? [] : null
     }
   }

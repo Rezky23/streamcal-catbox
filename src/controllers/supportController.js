@@ -1,4 +1,5 @@
 const takoService = require('../services/takoService');
+const { sanitizeInputText } = require('../utils/helpers');
 
 class SupportController {
   /**
@@ -42,14 +43,23 @@ class SupportController {
    */
   async createSupport(req, res) {
     try {
-      const { name, email, amount, paymentMethod = 'qris', message = '' } = req.body;
+      let { name, email, amount, paymentMethod = 'qris', message = '' } = req.body;
+
+      // Sanitize inputs to eliminate script/HTML injection
+      const cleanName = sanitizeInputText(name, 50);
+      const cleanMessage = sanitizeInputText(message, 200);
+      const cleanEmail = String(email || '')
+        .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
+        .trim()
+        .toLowerCase();
 
       // Validation
-      if (!name || typeof name !== 'string' || !name.trim()) {
-        return res.status(400).json({ success: false, error: 'Nama pendukung wajib diisi' });
+      if (!cleanName || cleanName.length < 2) {
+        return res.status(400).json({ success: false, error: 'Nama pendukung wajib diisi (minimal 2 karakter).' });
       }
 
-      if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!cleanEmail || !emailRegex.test(cleanEmail) || cleanEmail.length > 100) {
         return res.status(400).json({ success: false, error: 'Alamat email valid wajib diisi untuk konfirmasi pembayaran' });
       }
 
@@ -63,7 +73,7 @@ class SupportController {
       }
 
       const validMethods = ['qris', 'gopay', 'dana', 'paypal'];
-      const method = (paymentMethod || 'qris').toLowerCase();
+      const method = String(paymentMethod || 'qris').toLowerCase().trim();
       if (!validMethods.includes(method)) {
         return res.status(400).json({ success: false, error: `Metode pembayaran tidak valid. Pilihan: ${validMethods.join(', ')}` });
       }
@@ -81,11 +91,11 @@ class SupportController {
 
       // Create gift via Tako API
       const result = await takoService.createGift({
-        name,
-        email,
+        name: cleanName,
+        email: cleanEmail,
         amount: numAmount,
         paymentMethod: method,
-        message
+        message: cleanMessage
       });
 
       return res.status(200).json({
@@ -107,9 +117,15 @@ class SupportController {
    */
   async checkStatus(req, res) {
     try {
-      const { giftId } = req.params;
-      if (!giftId) {
+      const rawGiftId = req.params.giftId;
+      if (!rawGiftId || typeof rawGiftId !== 'string') {
         return res.status(400).json({ success: false, error: 'giftId is required' });
+      }
+
+      const giftId = rawGiftId.trim();
+      // Strict regex validation against NoSQL injection, path traversal, or command injection
+      if (!/^[a-zA-Z0-9_\-\.]{1,100}$/.test(giftId)) {
+        return res.status(400).json({ success: false, error: 'Format giftId tidak valid' });
       }
 
       if (!takoService.isConfigured()) {

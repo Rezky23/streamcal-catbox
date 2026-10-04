@@ -118,7 +118,9 @@ async function saveToStreamcal(req, res) {
     }
 
     const shortId = generateShortId(6);
-    const cleanExt = (format || 'mp3').replace('.', '').toLowerCase();
+    const ALLOWED_AUDIO_FORMATS = ['mp3', 'm4a', 'wav', 'aac', 'ogg', 'opus', 'weba', 'flac'];
+    const rawFormat = (format || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cleanExt = ALLOWED_AUDIO_FORMATS.includes(rawFormat) ? rawFormat : 'mp3';
     const storedName = `${shortId}.${cleanExt}`;
     const directUrl = `${config.baseUrl}/${storedName}`;
     const hash = calculateBufferHash(buffer);

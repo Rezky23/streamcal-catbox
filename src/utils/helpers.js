@@ -114,10 +114,70 @@ function isSafePublicUrl(string) {
   }
 }
 
+const ALLOWED_IMAGE_EXTS = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'ico', 'tiff', 'tif', 'avif', 'svg']);
+const ALLOWED_AUDIO_EXTS = new Set(['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac', 'wma', 'opus', 'weba', 'mid', 'midi']);
+
+const DANGEROUS_EXTS = new Set([
+  'html', 'htm', 'xhtml', 'shtml', 'shtm', 'phtml',
+  'js', 'mjs', 'cjs', 'ts', 'jsx', 'tsx',
+  'php', 'php3', 'php4', 'php5', 'pht',
+  'asp', 'aspx', 'axd', 'asx', 'ashx', 'asmx',
+  'jsp', 'jspx', 'jsw', 'jsv', 'jspa',
+  'cgi', 'pl', 'py', 'rb', 'sh', 'bash', 'cmd', 'bat', 'vbs', 'ps1',
+  'exe', 'dll', 'com', 'scr', 'msi', 'jar', 'apk',
+  'xml', 'xsl', 'xslt', 'svgz'
+]);
+
+function isAllowedExtension(ext) {
+  if (!ext || typeof ext !== 'string') return false;
+  const clean = ext.toLowerCase().trim().replace(/^\./, '');
+  if (DANGEROUS_EXTS.has(clean)) return false;
+  return ALLOWED_IMAGE_EXTS.has(clean) || ALLOWED_AUDIO_EXTS.has(clean);
+}
+
+/**
+ * Neutralize dangerous tags, inline scripts, and event handlers in SVG files
+ */
+function sanitizeSvgBuffer(buffer) {
+  if (!buffer || !Buffer.isBuffer(buffer)) return buffer;
+  let svgStr = buffer.toString('utf8');
+
+  // Strip script tags
+  svgStr = svgStr.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  // Strip foreignObject (which can embed HTML)
+  svgStr = svgStr.replace(/<foreignObject\b[^<]*(?:(?!<\/foreignObject>)<[^<]*)*<\/foreignObject>/gi, '');
+  // Strip inline event handlers (onload, onerror, onclick, onmouseover, etc.)
+  svgStr = svgStr.replace(/\bon[a-z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+  // Strip javascript: pseudo-protocols
+  svgStr = svgStr.replace(/(?:href|xlink:href)\s*=\s*['"]\s*javascript:[^'"]*['"]/gi, '');
+  // Strip iframe, embed, object
+  svgStr = svgStr.replace(/<(iframe|embed|object)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi, '');
+
+  return Buffer.from(svgStr, 'utf8');
+}
+
+/**
+ * Sanitize plain text input: strip HTML tags and unprintable control characters
+ */
+function sanitizeInputText(str, maxLength = 200) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/<[^>]*>/g, '') // Strip HTML tags
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Strip control chars
+    .trim()
+    .slice(0, maxLength);
+}
+
 module.exports = {
   formatBytes,
   getCleanExtension,
   isValidHttpUrl,
   isPrivateIp,
-  isSafePublicUrl
+  isSafePublicUrl,
+  isAllowedExtension,
+  sanitizeSvgBuffer,
+  sanitizeInputText,
+  ALLOWED_IMAGE_EXTS,
+  ALLOWED_AUDIO_EXTS,
+  DANGEROUS_EXTS
 };
