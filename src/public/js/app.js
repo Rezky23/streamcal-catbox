@@ -1196,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Disable submit & show spinner
       if (submitBtn) submitBtn.disabled = true;
-      if (submitBtnText) submitBtnText.textContent = 'Memproses ke Tako.id...';
+      if (submitBtnText) submitBtnText.textContent = 'Memproses pembayaran...';
 
       try {
         const res = await fetch('/api/support/create', {
@@ -1216,7 +1216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await res.json();
 
-        // Handle case where Tako API key is not configured on server
+        // Handle case where API credentials are not configured on server
         if (data.isConfigured === false) {
           if (checkoutContainer) {
             checkoutContainer.style.display = 'block';
@@ -1224,15 +1224,15 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="support-checkout-box" style="border-color:var(--warning-color); background:rgba(245, 158, 11, 0.08);">
                 <div class="support-checkout-header">
                   <div style="font-weight:700; color:var(--warning-color); font-size:1rem; display:flex; align-items:center; gap:8px;">
-                    <span>⚠️</span> Pengaturan API Tako
+                    <span>⚠️</span> Pengaturan Donasi
                   </div>
                 </div>
                 <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.5;">
-                  ${escapeHtml(data.message || 'Tako API Key belum diatur di server .env.')}
+                  ${escapeHtml(data.message || 'Layanan donasi sedang dalam penyiapan sistem.')}
                 </p>
                 <div class="support-checkout-actions">
-                  <a href="${escapeHtml(data.fallbackUrl || 'https://tako.id')}" target="_blank" rel="noopener noreferrer" class="support-pay-btn" style="background:var(--accent-primary);">
-                    <span>Buka Halaman Donasi di Tako.id</span>
+                  <a href="${escapeHtml(data.fallbackUrl || '#')}" target="_blank" rel="noopener noreferrer" class="support-pay-btn" style="background:var(--accent-primary);">
+                    <span>Lanjutkan Pembayaran Donasi</span>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                   </a>
                 </div>
@@ -1244,7 +1244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!res.ok || !data.success) {
-          throw new Error(data.error || 'Gagal membuat transaksi ke Tako.');
+          throw new Error(data.error || 'Gagal memproses transaksi donasi.');
         }
 
         const gift = data.data;
@@ -1299,7 +1299,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           ${gift.giftId ? `
           <div class="support-checkout-row">
-            <span>ID Hadiah:</span>
+            <span>ID Donasi:</span>
             <span style="font-family:monospace; font-size:0.8rem; color:var(--text-dim);">${escapeHtml(gift.giftId.slice(0, 16))}...</span>
           </div>` : ''}
         </div>
@@ -1307,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="support-checkout-actions">
           ${gift.paymentUrl ? `
           <a href="${escapeHtml(gift.paymentUrl)}" target="_blank" rel="noopener noreferrer" class="support-pay-btn">
-            <span>Bayar di Halaman Tako 🚀</span>
+            <span>Bayar Sekarang 🚀</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           </a>` : ''}
 
@@ -1317,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div id="checkoutFeedbackMsg" style="font-size:0.82rem; color:var(--text-dim); line-height:1.4;">
-          Selesaikan pembayaran di tab baru yang terbuka. Status akan otomatis terverifikasi secara berkala.
+          Selesaikan pembayaran di halaman pembayaran yang terbuka. Status akan otomatis terverifikasi secara berkala.
         </div>
       </div>
     `;
@@ -1377,7 +1377,7 @@ document.addEventListener('DOMContentLoaded', () => {
             badge.textContent = '🎉 Pembayaran Berhasil!';
           }
           if (feedback) {
-            feedback.innerHTML = '<strong style="color:#34d399;">Terima kasih banyak! Donasi Anda telah diterima oleh Tako dan dikonfirmasi. Dukungan Anda membantu Streamcal tetap gratis & online! 🌟</strong>';
+            feedback.innerHTML = '<strong style="color:#34d399;">Terima kasih banyak! Donasi Anda telah berhasil dikonfirmasi. Dukungan Anda membantu Streamcal tetap gratis & online! 🌟</strong>';
           }
           // Refresh supporters list to show new donor
           loadSupportConfig();
@@ -1390,7 +1390,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return true;
         } else {
           if (!isSilent && feedback) {
-            feedback.textContent = `Status transaksi saat ini: ${status || 'Menunggu konfirmasi pembayaran dari Tako'}.`;
+            feedback.textContent = `Status transaksi saat ini: ${status || 'Menunggu konfirmasi pembayaran'}.`;
           }
         }
       }
