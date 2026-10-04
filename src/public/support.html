@@ -405,54 +405,17 @@
       box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
     }
 
-    /* Power Up Section */
-    .powerup-box {
-      border: 1px solid var(--tako-card-border);
-      background: rgba(19, 27, 38, 0.6);
-      border-radius: 12px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    /* Payment Logos Styles */
+    .payment-logo-img {
+      max-height: 28px;
+      height: 24px;
+      width: auto;
+      object-fit: contain;
+      display: block;
     }
-    .powerup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #ffffff;
-    }
-    .powerup-badge {
-      font-size: 0.75rem;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.12);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: 700;
-    }
-    .powerup-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-    @media (max-width: 580px) {
-      .powerup-grid { grid-template-columns: 1fr; }
-    }
-    .powerup-item {
-      background: #17212e;
-      border: 1px solid #233144;
-      border-radius: 8px;
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.82rem;
-      color: var(--tako-text-muted);
-    }
-    .powerup-item span.lock {
-      font-size: 0.82rem;
-      opacity: 0.6;
+    .qris-logo-img {
+      filter: brightness(0) invert(1);
+      height: 22px;
     }
 
     /* Pembayaran Section */
@@ -743,7 +706,6 @@
         <img src="/assets/mascot.svg" alt="Streamcal Logo">
         <span>Streamcal</span>
       </a>
-      <a href="/" class="tako-nav-btn">Beranda</a>
     </header>
 
     <!-- Creator Profile Card -->
@@ -756,9 +718,6 @@
             <div class="creator-handle">@streamcal &bull; Free &amp; Permanent High-Speed File Hosting</div>
           </div>
         </div>
-        <a href="/" class="creator-action-btn">
-          <span>Ikuti</span>
-        </a>
       </div>
 
       <!-- Navigation Tabs -->
@@ -835,44 +794,7 @@
             </div>
           </div>
 
-          <!-- Section 5: Power Up -->
-          <div class="powerup-box" style="margin-top:8px;">
-            <div class="powerup-header">
-              <span>⚡ Power Up</span>
-              <span class="powerup-badge">💎 0 XP</span>
-            </div>
-            <div class="powerup-grid">
-              <div class="powerup-item">
-                <span>🪙 Floating Coins</span>
-                <span class="lock">🔒</span>
-              </div>
-              <div class="powerup-item">
-                <span>🎙️ Vocal Effect</span>
-                <span class="lock">🔒</span>
-              </div>
-              <div class="powerup-item">
-                <span>🔥 Fire Spark</span>
-                <span class="lock">🔒</span>
-              </div>
-              <div class="powerup-item">
-                <span>✨ Sparkle Glow</span>
-                <span class="lock">🔒</span>
-              </div>
-              <div class="powerup-item">
-                <span>🕵️ Pesan Rahasia</span>
-                <span class="lock">🔒</span>
-              </div>
-              <div class="powerup-item">
-                <span>🚀 Prioritas Server</span>
-                <span class="lock">🔒</span>
-              </div>
-            </div>
-            <div style="font-size:0.75rem; color:var(--tako-text-dim);">
-              Dukungan Anda otomatis mengaktifkan badge supporter dan prioritas server Streamcal.
-            </div>
-          </div>
-
-          <!-- Section 6: Pembayaran -->
+          <!-- Section 5: Pembayaran -->
           <div class="payment-section">
             <h2 class="payment-title">Pembayaran</h2>
 
@@ -894,47 +816,23 @@
                 
                 <!-- QRIS Card -->
                 <div class="tako-method-card active" data-method="qris" id="methodCardQris">
-                  <span class="tako-method-text">
-                    <svg width="60" height="24" viewBox="0 0 100 36" fill="currentColor">
-                      <rect x="2" y="2" width="28" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="4"/>
-                      <rect x="9" y="9" width="14" height="14" fill="currentColor"/>
-                      <path d="M42 6h8v24h-8zm16 0h8v24h-8zm16 0h16v8h-8v4h8v12h-8v-8h-8z" fill="currentColor"/>
-                    </svg>
-                    QRIS
-                    <span class="tako-method-sub-badge" id="qrisBadgeText">Instan</span>
-                  </span>
+                  <img src="/assets/qris.svg" alt="QRIS" class="payment-logo-img qris-logo-img">
+                  <span class="tako-method-sub-badge" id="qrisBadgeText">Instan</span>
                 </div>
 
                 <!-- GoPay Card -->
                 <div class="tako-method-card" data-method="gopay" id="methodCardGopay">
-                  <span class="tako-method-text" style="color:#00aed6;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#00aed6">
-                      <circle cx="12" cy="12" r="10"/>
-                      <circle cx="12" cy="12" r="4" fill="#16202e"/>
-                    </svg>
-                    gopay
-                  </span>
+                  <img src="/assets/gopay.svg" alt="GoPay" class="payment-logo-img">
                 </div>
 
                 <!-- DANA Card -->
                 <div class="tako-method-card" data-method="dana" id="methodCardDana">
-                  <span class="tako-method-text" style="color:#118eea;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#118eea">
-                      <rect x="3" y="4" width="18" height="16" rx="3"/>
-                      <path d="M7 8h10M7 12h10M7 16h6" stroke="#fff" stroke-width="2"/>
-                    </svg>
-                    DANA
-                  </span>
+                  <img src="/assets/dana.svg" alt="DANA" class="payment-logo-img">
                 </div>
 
                 <!-- PayPal Card -->
                 <div class="tako-method-card" data-method="paypal" id="methodCardPaypal">
-                  <span class="tako-method-text" style="color:#0079c1;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0079c1">
-                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.44A.96.96 0 0 1 5.89 1.66h6.703c3.275 0 5.674 1.34 5.922 4.673.308 4.148-2.607 6.44-5.918 6.44H9.684l-1.393 7.822a.641.641 0 0 1-.633.742h-.582z"/>
-                    </svg>
-                    PayPal
-                  </span>
+                  <img src="/assets/paypal.svg" alt="PayPal" class="payment-logo-img">
                 </div>
 
               </div>
