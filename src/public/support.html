@@ -622,8 +622,30 @@
       border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
+      transition: background 0.2s;
     }
     .tako-check-btn:hover { background: #334155; }
+    .pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+      margin-right: 5px;
+      vertical-align: middle;
+      animation: pulseAnim 1.4s infinite ease-in-out;
+    }
+    @keyframes pulseAnim {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.6); opacity: 0.4; }
+    }
+    .celebration-box {
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
     /* Tab Content Views */
     .tab-view-content {

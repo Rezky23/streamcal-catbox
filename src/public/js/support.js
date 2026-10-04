@@ -382,11 +382,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const gift = data.data;
-      renderCheckoutCard(gift);
+      let popupHandle = null;
 
       if (gift.paymentUrl) {
-        window.open(gift.paymentUrl, '_blank', 'noopener,noreferrer');
+        popupHandle = openPaymentPopup(gift.paymentUrl);
       }
+
+      renderCheckoutCard(gift, popupHandle);
     } catch (err) {
       alert('Terjadi kesalahan: ' + err.message);
     } finally {
@@ -394,6 +396,36 @@ document.addEventListener('DOMContentLoaded', () => {
       updateSummaryBox();
     }
   });
+
+  // Open centered seamless payment popup window
+  function openPaymentPopup(url) {
+    if (!url) return null;
+    const popupWidth = 480;
+    const popupHeight = 720;
+    const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - popupWidth) / 2));
+    const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - popupHeight) / 2));
+
+    try {
+      if (paymentPopupWindow && !paymentPopupWindow.closed) {
+        paymentPopupWindow.location.href = url;
+        paymentPopupWindow.focus();
+        return paymentPopupWindow;
+      }
+    } catch (_) {}
+
+    try {
+      paymentPopupWindow = window.open(
+        url,
+        'StreamcalPaymentModal',
+        `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,location=no,scrollbars=yes,resizable=yes`
+      );
+    } catch (e) {
+      console.warn('Popup blocked:', e);
+      paymentPopupWindow = null;
+    }
+
+    return paymentPopupWindow;
+  }
 
   // Render Fallback card if Tako is in setup mode
   function renderFallbackCard(data) {
@@ -418,8 +450,8 @@ document.addEventListener('DOMContentLoaded', () => {
     supportCheckoutContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // Render Active Checkout Ticket
-  function renderCheckoutCard(gift) {
+  // Render Active Checkout Ticket (Option A: Seamless Popup & Live Polling)
+  function renderCheckoutCard(gift, popupHandle) {
     if (!supportCheckoutContainer) return;
 
     if (supportPollingTimer) {
@@ -430,18 +462,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const cfg = CURRENCY_CONFIG[currentCurrency] || CURRENCY_CONFIG.IDR;
     const formattedIdr = 'IDR ' + Number(gift.amount).toLocaleString('id-ID');
     const originalDisplay = currentCurrency !== 'IDR' ? `${cfg.format(rawAmountValue)} (${formattedIdr})` : formattedIdr;
+    const isPopupBlocked = !popupHandle || popupHandle.closed || typeof popupHandle.closed === 'undefined';
 
     let countryTip = '';
     if (gift.paymentMethod === 'qris') {
       if (currentCountry === 'my') {
-        countryTip = `🇲🇾 <strong>Petunjuk DuitNow:</strong> Buka aplikasi Maybank MAE, CIMB OCTO, Touch 'n Go eWallet > Scan QR > Arahkan ke kode QRIS di layar pembayaran.`;
+        countryTip = `🇲🇾 <strong>Petunjuk DuitNow:</strong> Buka aplikasi Maybank MAE, CIMB OCTO, atau Touch 'n Go eWallet > Scan QR > Arahkan ke kode QRIS di jendela pembayaran pop-up.`;
       } else if (currentCountry === 'sg') {
-        countryTip = `🇸🇬 <strong>Petunjuk PayNow:</strong> Buka aplikasi DBS PayLah!, OCBC Digital, UOB TMRW, atau NETS > Scan QR > Arahkan ke kode QRIS di layar pembayaran.`;
+        countryTip = `🇸🇬 <strong>Petunjuk PayNow:</strong> Buka aplikasi DBS PayLah!, OCBC Digital, UOB TMRW, atau NETS > Scan QR > Arahkan ke kode QRIS di jendela pembayaran pop-up.`;
       } else {
-        countryTip = `📱 Buka aplikasi BCA, Mandiri Livin, BRImo, GoPay, OVO, ShopeePay atau DANA > Scan QRIS untuk menyelesaikan pembayaran.`;
+        countryTip = `📱 Buka aplikasi BCA, Mandiri Livin, BRImo, GoPay, OVO, ShopeePay atau DANA > Scan kode QRIS di jendela pembayaran.`;
       }
     } else if (gift.paymentMethod === 'paypal') {
-      countryTip = `💳 Masuk ke akun PayPal Anda atau pilih opsi <strong>"Pay with Debit or Credit Card"</strong> di halaman PayPal yang terbuka.`;
+      countryTip = `💳 Masuk ke akun PayPal Anda atau pilih opsi <strong>"Pay with Debit or Credit Card"</strong> di jendela pop-up yang terbuka.`;
     }
 
     supportCheckoutContainer.style.display = 'block';
@@ -451,7 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="font-weight:800; color:#ffffff; font-size:1.05rem; display:flex; align-items:center; gap:8px;">
             <span>💖</span> Tiket Pembayaran Dukungan
           </div>
-          <span class="tako-status-badge" id="checkoutBadge">⏳ Menunggu Pembayaran</span>
+          <span class="tako-status-badge" id="checkoutBadge">
+            <span class="pulse-dot"></span> ⏳ Menunggu Pembayaran...
+          </span>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem; padding:12px; background:#111923; border-radius:8px; border:1px solid #1e2b3c;">
@@ -474,42 +509,64 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>` : ''}
         </div>
 
+        <!-- Popup Guide Banner -->
+        <div style="padding:10px 14px; background:rgba(59, 130, 246, 0.12); border-left:3px solid #3b82f6; border-radius:6px; font-size:0.84rem; color:#bfdbfe; line-height:1.5;">
+          💡 <strong>Jendela Pembayaran Terbuka:</strong> Silakan selesaikan pembayaran di jendela terpusat. Halaman Streamcal ini akan memverifikasi dan mendeteksi pembayaran Anda secara otomatis.
+        </div>
+
+        <!-- Popup Blocked Warning -->
+        <div id="popupBlockedAlert" style="${isPopupBlocked ? 'display:block;' : 'display:none;'} padding:10px 12px; background:rgba(245, 158, 11, 0.15); border:1px solid #f59e0b; border-radius:6px; font-size:0.82rem; color:#fde68a;">
+          ⚠️ Jendela pop-up terblokir oleh peramban. Silakan klik tombol <strong>"Buka Jendela Pembayaran"</strong> di bawah.
+        </div>
+
         ${countryTip ? `
-        <div style="padding:10px 12px; background:rgba(59, 130, 246, 0.1); border-left:3px solid #3b82f6; border-radius:4px; font-size:0.82rem; color:#93c5fd; line-height:1.5;">
+        <div style="padding:10px 12px; background:rgba(16, 185, 129, 0.1); border-left:3px solid #10b981; border-radius:4px; font-size:0.82rem; color:#a7f3d0; line-height:1.5;">
           ${countryTip}
         </div>` : ''}
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
           ${gift.paymentUrl ? `
-          <a href="${escapeHtml(gift.paymentUrl)}" target="_blank" rel="noopener noreferrer" class="tako-pay-link">
-            <span>Bayar Sekarang 🚀</span>
+          <button type="button" class="tako-pay-link" id="reopenPaymentPopupBtn" style="border:none; cursor:pointer;">
+            <span>🚀 Buka Jendela Pembayaran</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </a>` : ''}
+          </button>` : ''}
 
           <button type="button" class="tako-check-btn" id="checkPaymentStatusBtn">
-            <span>🔄 Cek Status</span>
+            <span>🔄 Cek Status Manual</span>
           </button>
         </div>
 
+        <!-- Success Container -->
+        <div id="checkoutSuccessArea" style="display:none;"></div>
+
         <div id="checkoutFeedbackMsg" style="font-size:0.8rem; color:var(--tako-text-dim);">
-          Selesaikan pembayaran di halaman yang terbuka. Status transaksi akan diverifikasi otomatis secara berkala.
+          Selesaikan pembayaran di jendela pembayaran. Status transaksi akan diverifikasi otomatis tanpa perlu memuat ulang halaman.
         </div>
       </div>
     `;
 
     supportCheckoutContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
+    // Reopen popup button
+    const reopenBtn = document.getElementById('reopenPaymentPopupBtn');
+    reopenBtn?.addEventListener('click', () => {
+      openPaymentPopup(gift.paymentUrl);
+      const alertBox = document.getElementById('popupBlockedAlert');
+      if (alertBox) alertBox.style.display = 'none';
+    });
+
+    // Check status button
     const checkBtn = document.getElementById('checkPaymentStatusBtn');
     checkBtn?.addEventListener('click', () => {
       checkGiftStatus(gift.giftId);
     });
 
-    // Auto polling every 4 seconds
+    // Auto-polling every 3.5 seconds
     if (gift.giftId) {
       let attempts = 0;
       supportPollingTimer = setInterval(async () => {
         attempts++;
-        if (attempts > 45) {
+        if (attempts > 60) { // ~3.5 minutes
           clearInterval(supportPollingTimer);
           supportPollingTimer = null;
           return;
@@ -519,15 +576,16 @@ document.addEventListener('DOMContentLoaded', () => {
           clearInterval(supportPollingTimer);
           supportPollingTimer = null;
         }
-      }, 4000);
+      }, 3500);
     }
   }
 
-  // Check Status API
+  // Check Status API & Auto-Verification
   async function checkGiftStatus(giftId, isSilent = false) {
     if (!giftId) return false;
     const badge = document.getElementById('checkoutBadge');
     const feedback = document.getElementById('checkoutFeedbackMsg');
+    const successArea = document.getElementById('checkoutSuccessArea');
     const checkBtn = document.getElementById('checkPaymentStatusBtn');
 
     if (!isSilent && checkBtn) {
@@ -541,19 +599,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!isSilent && checkBtn) {
         checkBtn.disabled = false;
-        checkBtn.innerHTML = '<span>🔄 Cek Status</span>';
+        checkBtn.innerHTML = '<span>🔄 Cek Status Manual</span>';
       }
 
       if (data.success && data.data) {
         const status = (data.data.status || '').toLowerCase();
         if (status === 'success') {
+          // Auto close popup window if still open
+          try {
+            if (paymentPopupWindow && !paymentPopupWindow.closed) {
+              paymentPopupWindow.close();
+            }
+          } catch (_) {}
+
           if (badge) {
             badge.className = 'tako-status-badge success';
             badge.innerHTML = '✅ Pembayaran Berhasil!';
           }
-          if (feedback) {
-            feedback.innerHTML = '<span style="color:#22c55e; font-weight:700;">Terima kasih banyak atas dukungan Anda untuk Streamcal! 💖</span>';
+
+          if (successArea) {
+            successArea.style.display = 'block';
+            successArea.innerHTML = `
+              <div class="celebration-box" style="margin-top:10px; padding:18px; background:rgba(34, 197, 94, 0.12); border:1.5px solid #22c55e; border-radius:10px; text-align:center;">
+                <div style="font-size:2rem; margin-bottom:6px;">🎉 💖</div>
+                <div style="font-size:1.15rem; font-weight:800; color:#4ade80;">Terima Kasih Banyak Atas Dukungan Anda!</div>
+                <div style="font-size:0.86rem; color:#cbd5e1; margin-top:6px;">Donasi Anda telah terverifikasi sukses dan dialokasikan langsung untuk pemeliharaan server berkecepatan tinggi Streamcal.</div>
+              </div>
+            `;
           }
+
+          if (feedback) {
+            feedback.innerHTML = '<span style="color:#22c55e; font-weight:700;">Transaksi selesai dengan sukses! Nama Anda telah dicatat di Hall of Supporters.</span>';
+          }
+
           loadSupporters();
           return true;
         } else if (status === 'failed' || status === 'reversed') {
@@ -566,14 +644,14 @@ document.addEventListener('DOMContentLoaded', () => {
           return true;
         } else {
           if (!isSilent && feedback) {
-            feedback.textContent = 'Pembayaran belum terdeteksi. Silakan selesaikan pembayaran lalu klik tombol cek status lagi.';
+            feedback.textContent = 'Pembayaran belum terdeteksi. Silakan selesaikan pembayaran di jendela pop-up lalu klik tombol cek status lagi.';
           }
         }
       }
     } catch (err) {
       if (!isSilent && checkBtn) {
         checkBtn.disabled = false;
-        checkBtn.innerHTML = '<span>🔄 Cek Status</span>';
+        checkBtn.innerHTML = '<span>🔄 Cek Status Manual</span>';
       }
       console.warn('Status error:', err);
     }
