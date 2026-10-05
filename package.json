@@ -1,6 +1,6 @@
 {
   "name": "streamcal",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Streamcal - Fast, lightweight file and image hosting inspired by Catbox, powered by Node.js and MongoDB Atlas",
   "main": "src/server.js",
   "type": "commonjs",
