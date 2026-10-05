@@ -217,6 +217,13 @@ a:hover {
   background-color: var(--surface-alt);
   border-bottom: 1px solid var(--border-color);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs-header::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-btn {
@@ -1588,6 +1595,11 @@ a:hover {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.support-text-short {
+  display: none;
 }
 
 .nav-support-btn:hover {
@@ -2113,4 +2125,418 @@ a:hover {
   align-items: center;
   gap: 8px;
 }
+
+/* ========================================================
+   RESPONSIVE & MOBILE / HANDPHONE OPTIMIZATIONS
+   Ensures clean, polished layout on all screen sizes (320px - 768px)
+   ======================================================== */
+
+@media (max-width: 640px) {
+  /* Layout & Container */
+  .container {
+    padding: 0 12px;
+  }
+
+  /* Navigation Header */
+  .site-nav {
+    padding: 8px 0;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background-color: rgba(18, 21, 32, 0.94);
+  }
+
+  [data-theme="light"] .site-nav {
+    background-color: rgba(255, 255, 255, 0.94);
+  }
+
+  .nav-wrap {
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .brand-link {
+    gap: 6px;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+  }
+
+  .brand-logo {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+  }
+
+  .nav-links {
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .support-text-full {
+    display: none;
+  }
+
+  .support-text-short {
+    display: inline;
+  }
+
+  .nav-support-btn {
+    padding: 5px 9px;
+    font-size: 0.78rem;
+    gap: 4px;
+    border-radius: 9999px;
+  }
+
+  .nav-faq-link,
+  .nav-links a {
+    font-size: 0.82rem;
+  }
+
+  .theme-btn {
+    padding: 5px 8px;
+    font-size: 0.76rem;
+    gap: 4px;
+    border-radius: 6px;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: 22px 0 16px 0;
+  }
+
+  .mascot-large {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 8px;
+  }
+
+  .hero-title {
+    font-size: 1.65rem;
+    line-height: 1.25;
+    margin-bottom: 6px;
+    letter-spacing: -0.4px;
+  }
+
+  .hero-title .streamcal-brand {
+    font-size: 1.75rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.86rem;
+    line-height: 1.45;
+    padding: 0 4px;
+  }
+
+  /* Main Card & Tab Navigation */
+  .main-card {
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .tabs-header {
+    padding: 0 4px;
+    gap: 2px;
+  }
+
+  .tab-btn {
+    flex: 0 0 auto;
+    padding: 10px 13px;
+    font-size: 0.82rem;
+    gap: 6px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .tab-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .tab-content {
+    padding: 14px 12px;
+  }
+
+  /* Sub-tab Switcher (Image to URL) */
+  .sub-tab-switcher-wrap {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .sub-tab-switcher {
+    width: 100%;
+    display: flex;
+    padding: 3px;
+    border-radius: 10px;
+    box-sizing: border-box;
+  }
+
+  .sub-tab-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 6px;
+    font-size: 0.8rem;
+    gap: 5px;
+    white-space: nowrap;
+    border-radius: 7px;
+  }
+
+  .sub-tab-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Dropzone */
+  .dropzone {
+    padding: 24px 12px;
+    border-radius: 12px;
+  }
+
+  .dropzone-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .dropzone-title {
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+
+  .dropzone-subtitle {
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  /* Upload Result Card */
+  .result-card {
+    padding: 14px 12px;
+    border-radius: 10px;
+  }
+
+  .result-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .preview-row {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .thumb-preview {
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    max-height: 180px;
+  }
+
+  .code-formats {
+    width: 100%;
+  }
+
+  .url-box {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .copy-btn {
+    width: 100%;
+  }
+
+  /* Downloader Tab */
+  .dl-card-content {
+    gap: 14px;
+  }
+
+  .dl-title {
+    font-size: 1.15rem;
+  }
+
+  .dl-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .dl-search-box {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .dl-search-icon {
+    display: none;
+  }
+
+  .dl-search-input {
+    font-size: 0.86rem;
+    padding: 8px 6px;
+  }
+
+  .dl-btn-paste {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+
+  .dl-btn-submit {
+    padding: 8px 14px;
+    font-size: 0.84rem;
+  }
+
+  .dl-platform-tags {
+    gap: 5px;
+  }
+
+  .dl-tag {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+  }
+
+  .dl-result-card {
+    padding: 14px 12px;
+  }
+
+  .dl-result-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .dl-thumb-wrapper {
+    max-height: 200px;
+  }
+
+  .dl-buttons-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dl-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Audio Recognizer */
+  .rec-hero-header {
+    gap: 6px;
+  }
+
+  .rec-title {
+    font-size: 1.15rem;
+  }
+
+  .rec-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .rec-dropzone {
+    padding: 20px 10px;
+  }
+
+  .rec-dropzone-title {
+    font-size: 0.95rem;
+  }
+
+  .rec-dropzone-subtitle {
+    font-size: 0.78rem;
+  }
+
+  .rec-buttons-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rec-action-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+    font-size: 0.84rem;
+  }
+
+  .rec-result-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .rec-cover-wrap {
+    max-width: 180px;
+    margin: 0 auto;
+  }
+
+  /* Support Container on index */
+  .support-hero-header {
+    gap: 6px;
+  }
+
+  .support-title {
+    font-size: 1.15rem;
+  }
+
+  .support-subtitle {
+    font-size: 0.84rem;
+  }
+
+  .support-card {
+    padding: 16px 14px;
+  }
+
+  .support-presets-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .support-methods-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .support-checkout-actions {
+    flex-direction: column;
+  }
+
+  .support-pay-btn,
+  .support-check-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Extra Small Phones (e.g. 320px - 380px) */
+@media (max-width: 380px) {
+  .brand-link {
+    font-size: 1.05rem;
+  }
+
+  .brand-logo {
+    width: 24px;
+    height: 24px;
+  }
+
+  .nav-links {
+    gap: 5px;
+  }
+
+  .nav-support-btn {
+    padding: 4px 7px;
+    font-size: 0.74rem;
+  }
+
+  .theme-btn {
+    padding: 4px 6px;
+    font-size: 0.72rem;
+  }
+
+  .hero-title {
+    font-size: 1.45rem;
+  }
+
+  .hero-title .streamcal-brand {
+    font-size: 1.55rem;
+  }
+
+  .tab-btn {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+}
+
 
